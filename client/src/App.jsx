@@ -54,6 +54,7 @@ export default function App() {
   const ignoreSheetHandleClickRef = useRef(false);
   const sheetTouchStartYRef = useRef(null);
   const sheetTouchStartScrollTopRef = useRef(0);
+  const sheetContentPullStateRef = useRef(null);
   const pendingDetailScrollRef = useRef(false);
 
   const isMobileSheet = viewportWidth <= mobileSheetBreakpoint;
@@ -280,6 +281,25 @@ export default function App() {
     setMobileSheetHeightWithScrollReset(getDefaultMobileSheetHeight(viewportHeight));
   };
 
+  const snapExpandedSheetToDefaultOrExpanded = (currentHeight) => {
+    if (!isMobileSheet) {
+      return;
+    }
+
+    const defaultHeight = getDefaultMobileSheetHeight(viewportHeight);
+    const maxHeight = getExpandedMobileSheetHeight(viewportHeight);
+    const midpoint = (defaultHeight + maxHeight) / 2;
+    const nextHeight = currentHeight < midpoint ? defaultHeight : maxHeight;
+
+    if (nextHeight < maxHeight) {
+      setMobileSheetHeightWithScrollReset(nextHeight);
+      return;
+    }
+
+    setDragSheetHeight(null);
+    setMobileSheetHeight(nextHeight);
+  };
+
   const isMobileSheetAtDefault = isMobileSheet && resolvedMobileSheetVisibleHeight != null
     ? Math.abs(resolvedMobileSheetVisibleHeight - getDefaultMobileSheetHeight(viewportHeight)) <= 2
     : false;
@@ -445,6 +465,7 @@ export default function App() {
               return;
             }
 
+            sheetContentPullStateRef.current = null;
             sheetTouchStartScrollTopRef.current = sheetContentRef.current?.scrollTop ?? 0;
             sheetTouchStartYRef.current = event.touches[0]?.clientY ?? null;
           }}
@@ -469,10 +490,27 @@ export default function App() {
               const startedAtTop = sheetTouchStartScrollTopRef.current <= 0;
               const isStillAtTop = (sheetElement?.scrollTop ?? 0) <= 0;
 
-              if (isPullingDown && startedAtTop && isStillAtTop && currentY - startY > 18) {
+              if (!sheetContentPullStateRef.current && isPullingDown && startedAtTop && isStillAtTop) {
+                sheetContentPullStateRef.current = {
+                  startY,
+                  startHeight: resolvedMobileSheetVisibleHeight ?? mobileSheetHeightRef.current,
+                  currentHeight: resolvedMobileSheetVisibleHeight ?? mobileSheetHeightRef.current,
+                  minHeight: getMobileSheetCollapsedHeight(viewportHeight),
+                  defaultHeight: getDefaultMobileSheetHeight(viewportHeight),
+                  maxHeight: getExpandedMobileSheetHeight(viewportHeight),
+                };
+              }
+
+              if (sheetContentPullStateRef.current) {
                 event.preventDefault();
-                sheetTouchStartYRef.current = null;
-                collapseMobileSheetToDefault();
+                const pullState = sheetContentPullStateRef.current;
+                const nextHeight = clampSheetHeight(
+                  pullState.startHeight + (pullState.startY - currentY),
+                  pullState.defaultHeight,
+                  pullState.maxHeight,
+                );
+                pullState.currentHeight = nextHeight;
+                setDragSheetHeight(nextHeight);
               }
               return;
             }
@@ -482,6 +520,15 @@ export default function App() {
             expandMobileSheet();
           }}
           onTouchEnd={() => {
+            const pullState = sheetContentPullStateRef.current;
+            if (pullState) {
+              sheetContentPullStateRef.current = null;
+              sheetTouchStartYRef.current = null;
+              sheetTouchStartScrollTopRef.current = 0;
+              snapExpandedSheetToDefaultOrExpanded(pullState.currentHeight ?? pullState.startHeight);
+              return;
+            }
+
             sheetTouchStartYRef.current = null;
             sheetTouchStartScrollTopRef.current = 0;
           }}
