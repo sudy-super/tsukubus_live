@@ -7,6 +7,7 @@ const mobileSheetBreakpoint = 980;
 const mobileSheetCollapsedHeight = 68;
 const mobileSheetDefaultRatio = 0.4;
 const mobileSheetExpandedRatio = 0.92;
+const copyrightYear = new Date().getFullYear();
 
 const googleMapsStyles = [
   { elementType: "geometry", stylers: [{ color: "#334458" }] },
@@ -601,6 +602,8 @@ export default function App() {
               </div>
             )}
           </div>
+
+          <div className="sheet-footer">© {copyrightYear} sudy. All rights reserved.</div>
         </div>
       </section>
     </div>

@@ -126,6 +126,15 @@ textarea {
   gap: 18px;
 }
 
+.sheet-footer {
+  grid-column: 1 / -1;
+  margin: -2px 8px 0;
+  color: rgba(164, 177, 199, 0.72);
+  font-size: 0.68rem;
+  line-height: 1.3;
+  text-align: center;
+}
+
 .section-block {
   min-width: 0;
   padding: 0;
