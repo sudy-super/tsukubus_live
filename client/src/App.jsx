@@ -913,7 +913,7 @@ function MapCanvas({
       googleMaps.event.addListenerOnce(map, "idle", () => snapMapZoomToInteger(map));
       hasFittedRef.current = true;
     }
-  }, [stops, selectedStopId, onSelectStop]);
+  }, [isMapReady, stops, selectedStopId, onSelectStop]);
 
   useEffect(() => {
     const map = mapInstanceRef.current;
@@ -936,7 +936,7 @@ function MapCanvas({
           onClick: () => onSelectVehicle(vehicle),
         }),
     );
-  }, [vehicles, selectedVehicleId, onSelectVehicle]);
+  }, [isMapReady, vehicles, selectedVehicleId, onSelectVehicle]);
 
   return (
     <div className="map-canvas-wrap">
