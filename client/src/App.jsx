@@ -281,15 +281,21 @@ export default function App() {
     setMobileSheetHeightWithScrollReset(getDefaultMobileSheetHeight(viewportHeight));
   };
 
-  const snapExpandedSheetToDefaultOrExpanded = (currentHeight) => {
+  const snapPulledSheetHeight = (currentHeight) => {
     if (!isMobileSheet) {
       return;
     }
 
+    const collapsedHeight = getMobileSheetCollapsedHeight(viewportHeight);
     const defaultHeight = getDefaultMobileSheetHeight(viewportHeight);
     const maxHeight = getExpandedMobileSheetHeight(viewportHeight);
-    const midpoint = (defaultHeight + maxHeight) / 2;
-    const nextHeight = currentHeight < midpoint ? defaultHeight : maxHeight;
+    const collapsedMidpoint = (collapsedHeight + defaultHeight) / 2;
+    const expandedMidpoint = (defaultHeight + maxHeight) / 2;
+    const nextHeight = currentHeight < collapsedMidpoint
+      ? collapsedHeight
+      : currentHeight < expandedMidpoint
+        ? defaultHeight
+        : maxHeight;
 
     if (nextHeight < maxHeight) {
       setMobileSheetHeightWithScrollReset(nextHeight);
@@ -449,12 +455,18 @@ export default function App() {
             }
 
             const sheetElement = sheetContentRef.current;
-            if (isMobileSheetExpanded) {
-              if (sheetElement && sheetElement.scrollTop <= 0 && event.deltaY < -12) {
+            if (sheetElement && sheetElement.scrollTop <= 0 && event.deltaY < -12) {
+              if (isMobileSheetExpanded) {
                 event.preventDefault();
                 collapseMobileSheetToDefault();
+                return;
               }
-              return;
+
+              if (isMobileSheetAtDefault) {
+                event.preventDefault();
+                collapseMobileSheetToCollapsed();
+                return;
+              }
             }
 
             event.preventDefault();
@@ -484,7 +496,7 @@ export default function App() {
               return;
             }
 
-            if (isMobileSheetExpanded) {
+            if (isMobileSheetExpanded || isMobileSheetAtDefault) {
               const sheetElement = sheetContentRef.current;
               const isPullingDown = currentY > startY;
               const startedAtTop = sheetTouchStartScrollTopRef.current <= 0;
@@ -506,7 +518,7 @@ export default function App() {
                 const pullState = sheetContentPullStateRef.current;
                 const nextHeight = clampSheetHeight(
                   pullState.startHeight + (pullState.startY - currentY),
-                  pullState.defaultHeight,
+                  pullState.minHeight,
                   pullState.maxHeight,
                 );
                 pullState.currentHeight = nextHeight;
@@ -525,7 +537,7 @@ export default function App() {
               sheetContentPullStateRef.current = null;
               sheetTouchStartYRef.current = null;
               sheetTouchStartScrollTopRef.current = 0;
-              snapExpandedSheetToDefaultOrExpanded(pullState.currentHeight ?? pullState.startHeight);
+              snapPulledSheetHeight(pullState.currentHeight ?? pullState.startHeight);
               return;
             }
 
