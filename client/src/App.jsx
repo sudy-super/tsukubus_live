@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-const googleMapsApiKey = import.meta.env.GOOGLE_MAPS_API_KEY;
 const stopIconUrl = "/bus_icon.png";
 const campusOverlayMaxZoom = 17;
 const mobileSheetBreakpoint = 980;
@@ -33,6 +32,7 @@ const googleMapsStyles = [
 ];
 
 export default function App() {
+  const [googleMapsApiKey, setGoogleMapsApiKey] = useState(null);
   const [stops, setStops] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [campusTileManifest, setCampusTileManifest] = useState(null);
@@ -83,7 +83,8 @@ export default function App() {
     let cancelled = false;
 
     async function initialize() {
-      const [stopsPayload, campusTilesPayload] = await Promise.all([
+      const [configPayload, stopsPayload, campusTilesPayload] = await Promise.all([
+        fetchJson("/api/config").catch(() => ({ googleMapsApiKey: null })),
         fetchJson("/api/stops"),
         fetchJson("/api/campus-map-tiles").catch(() => ({ tiles: [], coverage: null })),
       ]);
@@ -92,6 +93,7 @@ export default function App() {
         return;
       }
 
+      setGoogleMapsApiKey(configPayload.googleMapsApiKey || null);
       setStops(stopsPayload.stops);
       setCampusTileManifest(campusTilesPayload);
     }
@@ -320,6 +322,7 @@ export default function App() {
     <div className="app">
       <MapCanvas
         mapRef={mapRef}
+        googleMapsApiKey={googleMapsApiKey}
         stops={stops}
         vehicles={vehicles}
         campusTileManifest={campusTileManifest}
@@ -598,6 +601,7 @@ function VehicleChip({ vehicle, isActive, onClick }) {
 
 function MapCanvas({
   mapRef,
+  googleMapsApiKey,
   stops,
   vehicles,
   campusTileManifest,
@@ -685,7 +689,7 @@ function MapCanvas({
       mapInstanceRef.current = null;
       mapRef.current = null;
     };
-  }, [mapRef]);
+  }, [googleMapsApiKey, mapRef]);
 
   useEffect(() => {
     const map = mapInstanceRef.current;
