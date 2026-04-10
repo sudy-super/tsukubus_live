@@ -33,6 +33,7 @@ const anchorQueries = [
 
 const queryOffsetsMinutes = [-60, -45, -30, -15, 0, 15, 30];
 const jstOffsetMinutes = 9 * 60;
+const upstreamRequestTimeoutMs = 8_000;
 
 export function createLiveMapService({
   staticData,
@@ -117,8 +118,11 @@ export function createLiveMapService({
     const routeCandidates = await fetchRouteCandidates(now);
     const activeCandidates = routeCandidates.filter((candidate) => isActiveCandidate(candidate, now));
     const vehicles = (
-      await Promise.all(activeCandidates.map((candidate) => hydrateVehicle(candidate, now)))
-    ).filter(Boolean);
+      await Promise.allSettled(activeCandidates.map((candidate) => hydrateVehicle(candidate, now)))
+    )
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => result.value)
+      .filter(Boolean);
 
     const generatedAt = new Date().toISOString();
 
@@ -139,7 +143,7 @@ export function createLiveMapService({
     const queryTimes = queryOffsetsMinutes
       .map((offsetMinutes) => addMinutes(now, offsetMinutes))
       .filter((queryTime) => isSameLocalDate(queryTime, now));
-    const responses = await Promise.all(
+    const responses = await Promise.allSettled(
       anchorQueries.flatMap((anchor) =>
         queryTimes.map((queryTime) =>
           queryRouteSearchSafe({
@@ -153,7 +157,12 @@ export function createLiveMapService({
 
     const byTrip = new Map();
 
-    for (const response of responses) {
+    for (const result of responses) {
+      if (result.status !== "fulfilled") {
+        continue;
+      }
+
+      const response = result.value;
       for (const candidate of response.candidate_list ?? []) {
         const routeName = candidate.routeList?.[0]?.routeShortName;
         if (!routeName || !targetRoutes[routeName] || !candidate.trip1) {
@@ -258,7 +267,7 @@ export function createLiveMapService({
       return await queryRouteSearch(params);
     } catch (error) {
       const message = error instanceof Error ? error.message : "";
-      if (message === "/route_search failed with 500") {
+      if (message === "/route_search failed with 500" || message.includes("timed out") || message === "This operation was aborted") {
         return {
           datetime: params.dateTime,
           candidate_list: [],
@@ -294,16 +303,33 @@ export function createLiveMapService({
 
   async function postJson(pathname, form) {
     const body = new URLSearchParams(form).toString();
-    const response = await fetchImpl(`https://navi.kanto-tetsudo.com${pathname}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "X-Requested-With": "XMLHttpRequest",
-        Origin: "https://navi.kanto-tetsudo.com",
-        Referer: "https://navi.kanto-tetsudo.com/search_dest",
-      },
-      body,
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      controller.abort(new Error(`${pathname} timed out after ${upstreamRequestTimeoutMs}ms`));
+    }, upstreamRequestTimeoutMs);
+
+    let response;
+    try {
+      response = await fetchImpl(`https://navi.kanto-tetsudo.com${pathname}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+          "X-Requested-With": "XMLHttpRequest",
+          Origin: "https://navi.kanto-tetsudo.com",
+          Referer: "https://navi.kanto-tetsudo.com/search_dest",
+        },
+        body,
+        signal: controller.signal,
+      });
+    } catch (error) {
+      const reason = controller.signal.aborted ? controller.signal.reason : null;
+      if (reason instanceof Error) {
+        throw reason;
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     if (!response.ok) {
       throw new Error(`${pathname} failed with ${response.status}`);
