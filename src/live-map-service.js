@@ -88,11 +88,14 @@ export function createLiveMapService({
         return vehicleCache.inFlight;
       }
 
+      const previousPayload = vehicleCache.value;
+      const previousLastSuccessfulAt = vehicleCache.lastSuccessfulAt;
       vehicleCache.inFlight = refreshVehicles(now)
-        .then((payload) => {
+        .then((refreshState) => {
+          const payload = mergeVehiclePayload(previousPayload, refreshState, previousLastSuccessfulAt);
           vehicleCache.value = payload;
           vehicleCache.lastSuccessfulAt = payload.lastSuccessfulAt;
-          vehicleCache.error = null;
+          vehicleCache.error = refreshState.upstreamError ?? null;
           return payload;
         })
         .catch((error) => {
@@ -115,22 +118,45 @@ export function createLiveMapService({
   };
 
   async function refreshVehicles(now) {
-    const routeCandidates = await fetchRouteCandidates(now);
-    const activeCandidates = routeCandidates.filter((candidate) => isActiveCandidate(candidate, now));
-    const vehicles = (
-      await Promise.allSettled(activeCandidates.map((candidate) => hydrateVehicle(candidate, now)))
-    )
-      .filter((result) => result.status === "fulfilled")
-      .map((result) => result.value)
-      .filter(Boolean);
+    const routeCandidateState = await fetchRouteCandidates(now);
+    const activeCandidates = routeCandidateState.candidates.filter((candidate) => isActiveCandidate(candidate, now));
+    const hydrateResults = await Promise.allSettled(activeCandidates.map((candidate) => hydrateVehicle(candidate, now)));
+    const vehicles = [];
+    let hydrateRejectedCount = 0;
+    let hydrateMissingPositionCount = 0;
+
+    for (const result of hydrateResults) {
+      if (result.status === "rejected") {
+        hydrateRejectedCount += 1;
+        continue;
+      }
+
+      if (!result.value) {
+        hydrateMissingPositionCount += 1;
+        continue;
+      }
+
+      vehicles.push(result.value);
+    }
 
     const generatedAt = new Date().toISOString();
+    const degradationReasons = [];
+    if (routeCandidateState.degradedCount > 0) {
+      degradationReasons.push(`route_search:${routeCandidateState.degradedCount}`);
+    }
+    if (hydrateRejectedCount > 0) {
+      degradationReasons.push(`hydrate_error:${hydrateRejectedCount}`);
+    }
+    if (hydrateMissingPositionCount > 0) {
+      degradationReasons.push(`position_missing:${hydrateMissingPositionCount}`);
+    }
 
     return {
       generatedAt,
-      lastSuccessfulAt: generatedAt,
       queryWindowMinutes: queryOffsetsMinutes,
       vehicles: vehicles.sort(compareVehicles),
+      isDegraded: degradationReasons.length > 0,
+      upstreamError: degradationReasons.length ? degradationReasons.join(", ") : null,
       stats: {
         activeCount: vehicles.length,
         clockwiseCount: vehicles.filter((vehicle) => vehicle.direction === "clockwise").length,
@@ -156,13 +182,18 @@ export function createLiveMapService({
     );
 
     const byTrip = new Map();
+    let degradedCount = 0;
 
     for (const result of responses) {
       if (result.status !== "fulfilled") {
+        degradedCount += 1;
         continue;
       }
 
       const response = result.value;
+      if (response._degraded) {
+        degradedCount += 1;
+      }
       for (const candidate of response.candidate_list ?? []) {
         const routeName = candidate.routeList?.[0]?.routeShortName;
         if (!routeName || !targetRoutes[routeName] || !candidate.trip1) {
@@ -177,7 +208,10 @@ export function createLiveMapService({
       }
     }
 
-    return [...byTrip.values()].map((segments) => mergeTripCandidates(segments, now));
+    return {
+      candidates: [...byTrip.values()].map((segments) => mergeTripCandidates(segments, now)),
+      degradedCount,
+    };
   }
 
   async function hydrateVehicle(candidate, now) {
@@ -271,6 +305,8 @@ export function createLiveMapService({
         return {
           datetime: params.dateTime,
           candidate_list: [],
+          _degraded: true,
+          _degradedReason: message,
         };
       }
       throw error;
@@ -337,6 +373,69 @@ export function createLiveMapService({
 
     return response.json();
   }
+}
+
+function mergeVehiclePayload(previousPayload, refreshState, previousLastSuccessfulAt) {
+  if (!previousPayload) {
+    return finalizeVehiclePayload({
+      generatedAt: refreshState.generatedAt,
+      lastSuccessfulAt: refreshState.generatedAt,
+      queryWindowMinutes: refreshState.queryWindowMinutes,
+      vehicles: refreshState.vehicles,
+      stale: false,
+      upstreamError: refreshState.upstreamError,
+    });
+  }
+
+  if (!refreshState.isDegraded) {
+    return finalizeVehiclePayload({
+      generatedAt: refreshState.generatedAt,
+      lastSuccessfulAt: refreshState.generatedAt,
+      queryWindowMinutes: refreshState.queryWindowMinutes,
+      vehicles: refreshState.vehicles,
+      stale: false,
+      upstreamError: null,
+    });
+  }
+
+  const mergedByTrip = new Map(previousPayload.vehicles.map((vehicle) => [vehicle.tripId, vehicle]));
+  for (const vehicle of refreshState.vehicles) {
+    mergedByTrip.set(vehicle.tripId, vehicle);
+  }
+
+  return finalizeVehiclePayload({
+    generatedAt: refreshState.generatedAt,
+    lastSuccessfulAt: previousLastSuccessfulAt ?? previousPayload.lastSuccessfulAt ?? refreshState.generatedAt,
+    queryWindowMinutes: refreshState.queryWindowMinutes,
+    vehicles: [...mergedByTrip.values()],
+    stale: true,
+    upstreamError: refreshState.upstreamError,
+  });
+}
+
+function finalizeVehiclePayload({ generatedAt, lastSuccessfulAt, queryWindowMinutes, vehicles, stale, upstreamError }) {
+  const sortedVehicles = [...vehicles].sort(compareVehicles);
+  const payload = {
+    generatedAt,
+    lastSuccessfulAt,
+    queryWindowMinutes,
+    vehicles: sortedVehicles,
+    stats: {
+      activeCount: sortedVehicles.length,
+      clockwiseCount: sortedVehicles.filter((vehicle) => vehicle.direction === "clockwise").length,
+      counterclockwiseCount: sortedVehicles.filter((vehicle) => vehicle.direction === "counterclockwise").length,
+    },
+  };
+
+  if (stale) {
+    payload.stale = true;
+  }
+
+  if (upstreamError) {
+    payload.upstreamError = upstreamError;
+  }
+
+  return payload;
 }
 
 function createIndexedStaticData(staticData) {
