@@ -5,7 +5,7 @@ import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, "..");
-const refDir = path.join(rootDir, "ref");
+const buildDataDir = path.join(rootDir, "build_data");
 const campusMapsDir = path.join(rootDir, "client", "public", "campus_maps");
 const generatedDir = path.join(rootDir, "src", "generated");
 
@@ -21,9 +21,9 @@ const stopNameAliases = new Map([
 await mkdir(generatedDir, { recursive: true });
 
 const [stopsRaw, stationOrdersRaw, geoJsonRaw, campusMapData] = await Promise.all([
-  readJson(path.join(refDir, "eritanbot_bus_stops.json")),
-  readJson(path.join(refDir, "eritanbot_station_orders.json")),
-  readJson(path.join(refDir, "eritanbot_bus_map.geojson")),
+  readJson(path.join(buildDataDir, "eritanbot_bus_stops.json")),
+  readJson(path.join(buildDataDir, "eritanbot_station_orders.json")),
+  readJson(path.join(buildDataDir, "eritanbot_bus_map.geojson")),
   buildCampusMapData(),
 ]);
 

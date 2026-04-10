@@ -1,0 +1,219 @@
+[
+  {
+    "name": "農林技術センター",
+    "stationKey": "農林技術センター",
+    "lat": 36.11820792,
+    "lng": 140.0960094,
+    "group": "kantetsu"
+  },
+  {
+    "name": "一ノ矢学生宿舎前",
+    "stationKey": "一ノ矢学生宿舎前",
+    "lat": 36.11939093,
+    "lng": 140.0991476,
+    "group": "kantetsu"
+  },
+  {
+    "name": "大学植物見本園",
+    "stationKey": "大学植物見本園",
+    "lat": 36.11567285,
+    "lng": 140.1021731,
+    "group": "kantetsu"
+  },
+  {
+    "name": "虹の広場",
+    "stationKey": "虹の広場",
+    "lat": 36.11341071,
+    "lng": 140.0973344,
+    "group": "kantetsu"
+  },
+  {
+    "name": "第三エリア前",
+    "stationKey": "第三エリア前",
+    "lat": 36.1101539,
+    "lng": 140.0985709,
+    "group": "kantetsu"
+  },
+  {
+    "name": "第一エリア前",
+    "stationKey": "第一エリア前",
+    "lat": 36.10767274,
+    "lng": 140.0999844,
+    "group": "kantetsu"
+  },
+  {
+    "name": "TARAセンター前",
+    "stationKey": "ＴＡＲＡセンター前",
+    "lat": 36.11299901,
+    "lng": 140.1024199,
+    "group": "kantetsu"
+  },
+  {
+    "name": "筑波大学中央",
+    "stationKey": "筑波大学中央",
+    "lat": 36.11128719,
+    "lng": 140.1035786,
+    "group": "kantetsu"
+  },
+  {
+    "name": "大学公園",
+    "stationKey": "大学公園",
+    "lat": 36.109558,
+    "lng": 140.1040453,
+    "group": "kantetsu"
+  },
+  {
+    "name": "松美池",
+    "stationKey": "松美池",
+    "lat": 36.10788077,
+    "lng": 140.1044583,
+    "group": "kantetsu"
+  },
+  {
+    "name": "天久保三丁目",
+    "stationKey": "天久保三丁目",
+    "lat": 36.10683195,
+    "lng": 140.1052952,
+    "group": "kantetsu"
+  },
+  {
+    "name": "大学会館前",
+    "stationKey": "大学会館前",
+    "lat": 36.10508532,
+    "lng": 140.1011378,
+    "group": "kantetsu"
+  },
+  {
+    "name": "筑波大学西",
+    "stationKey": "筑波大学西",
+    "lat": 36.10316528,
+    "lng": 140.1014864,
+    "group": "kantetsu"
+  },
+  {
+    "name": "合宿所",
+    "stationKey": "合宿所",
+    "lat": 36.10363338,
+    "lng": 140.1065183,
+    "group": "kantetsu"
+  },
+  {
+    "name": "天久保池",
+    "stationKey": "天久保池",
+    "lat": 36.10046068,
+    "lng": 140.1058209,
+    "group": "kantetsu"
+  },
+  {
+    "name": "平砂学生宿舎前",
+    "stationKey": "平砂学生宿舎前",
+    "lat": 36.09750892,
+    "lng": 140.1021731,
+    "group": "kantetsu"
+  },
+  {
+    "name": "追越学生宿舎前",
+    "stationKey": "追越学生宿舎前",
+    "lat": 36.09549334,
+    "lng": 140.1029241,
+    "group": "kantetsu"
+  },
+  {
+    "name": "天久保二丁目",
+    "stationKey": "天久保二丁目",
+    "lat": 36.0973052,
+    "lng": 140.1061106,
+    "group": "kantetsu"
+  },
+  {
+    "name": "追越宿舎東",
+    "stationKey": "追越宿舎東",
+    "lat": 36.09436199,
+    "lng": 140.1067758,
+    "group": "kantetsu"
+  },
+  {
+    "name": "メディカルセンター病院",
+    "stationKey": "メディカルセンター病院",
+    "lat": 36.09246336,
+    "lng": 140.1059121,
+    "group": "kantetsu"
+  },
+  {
+    "name": "筑波大学病院入口",
+    "stationKey": "筑波大学病院入口",
+    "lat": 36.09316993,
+    "lng": 140.1038468,
+    "group": "kantetsu"
+  },
+  {
+    "name": "筑波メディカルセンター前",
+    "stationKey": "筑波メディカルセンター前",
+    "lat": 36.0906774,
+    "lng": 140.1052952,
+    "group": "kantetsu"
+  },
+  {
+    "name": "筑波大学春日エリア前",
+    "stationKey": "筑波大学春日エリア前",
+    "lat": 36.08770359,
+    "lng": 140.1073873,
+    "group": "kantetsu"
+  },
+  {
+    "name": "つくばセンター",
+    "stationKey": "つくばセンター",
+    "lat": 36.082351,
+    "lng": 140.112755,
+    "group": "kantetsu"
+  },
+  {
+    "name": "吾妻小学校",
+    "stationKey": "吾妻小学校",
+    "lat": 36.0844739,
+    "lng": 140.1104128,
+    "group": "kantetsu"
+  },
+  {
+    "name": "つくばセンター",
+    "stationKey": "北部シャトルつくばセンター",
+    "lat": 36.0827084,
+    "lng": 140.1121457,
+    "group": "north_shuttle"
+  },
+  {
+    "name": "妻木",
+    "stationKey": "妻木",
+    "lat": 36.0909201,
+    "lng": 140.1134296,
+    "group": "north_shuttle"
+  },
+  {
+    "name": "天久保（筑波実験植物園）",
+    "stationKey": "天久保（筑波実験植物園）",
+    "lat": 36.0993397,
+    "lng": 140.110276,
+    "group": "north_shuttle"
+  },
+  {
+    "name": "テクノパーク桜入口",
+    "stationKey": "テクノパーク桜入口",
+    "lat": 36.1087732,
+    "lng": 140.1073181,
+    "group": "north_shuttle"
+  },
+  {
+    "name": "一ノ矢交差点",
+    "stationKey": "一ノ矢交差点",
+    "lat": 36.1225221,
+    "lng": 140.0970801,
+    "group": "north_shuttle"
+  },
+  {
+    "name": "花畑（防災科学技術研究所）",
+    "stationKey": "花畑（防災科学技術研究所）",
+    "lat": 36.1273578,
+    "lng": 140.0925553,
+    "group": "north_shuttle"
+  }
+]

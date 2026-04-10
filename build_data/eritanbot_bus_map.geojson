@@ -1,0 +1,2825 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "農林技術センター",
+        "stationKey": "農林技術センター",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0960094,
+          36.11820792
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "一ノ矢学生宿舎前",
+        "stationKey": "一ノ矢学生宿舎前",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0991476,
+          36.11939093
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "大学植物見本園",
+        "stationKey": "大学植物見本園",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1021731,
+          36.11567285
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "虹の広場",
+        "stationKey": "虹の広場",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0973344,
+          36.11341071
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "第三エリア前",
+        "stationKey": "第三エリア前",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0985709,
+          36.1101539
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "第一エリア前",
+        "stationKey": "第一エリア前",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0999844,
+          36.10767274
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "TARAセンター前",
+        "stationKey": "ＴＡＲＡセンター前",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1024199,
+          36.11299901
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "筑波大学中央",
+        "stationKey": "筑波大学中央",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1035786,
+          36.11128719
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "大学公園",
+        "stationKey": "大学公園",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1040453,
+          36.109558
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "松美池",
+        "stationKey": "松美池",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1044583,
+          36.10788077
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "天久保三丁目",
+        "stationKey": "天久保三丁目",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1052952,
+          36.10683195
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "大学会館前",
+        "stationKey": "大学会館前",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1011378,
+          36.10508532
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "筑波大学西",
+        "stationKey": "筑波大学西",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1014864,
+          36.10316528
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "合宿所",
+        "stationKey": "合宿所",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1065183,
+          36.10363338
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "天久保池",
+        "stationKey": "天久保池",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1058209,
+          36.10046068
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "平砂学生宿舎前",
+        "stationKey": "平砂学生宿舎前",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1021731,
+          36.09750892
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "追越学生宿舎前",
+        "stationKey": "追越学生宿舎前",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1029241,
+          36.09549334
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "天久保二丁目",
+        "stationKey": "天久保二丁目",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1061106,
+          36.0973052
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "追越宿舎東",
+        "stationKey": "追越宿舎東",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1067758,
+          36.09436199
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "メディカルセンター病院",
+        "stationKey": "メディカルセンター病院",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1059121,
+          36.09246336
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "筑波大学病院入口",
+        "stationKey": "筑波大学病院入口",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1038468,
+          36.09316993
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "筑波メディカルセンター前",
+        "stationKey": "筑波メディカルセンター前",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1052952,
+          36.0906774
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "筑波大学春日エリア前",
+        "stationKey": "筑波大学春日エリア前",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1073873,
+          36.08770359
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "つくばセンター",
+        "stationKey": "つくばセンター",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.112755,
+          36.082351
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "吾妻小学校",
+        "stationKey": "吾妻小学校",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1104128,
+          36.0844739
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "つくばセンター",
+        "stationKey": "北部シャトルつくばセンター",
+        "group": "north_shuttle"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1121457,
+          36.0827084
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "妻木",
+        "stationKey": "妻木",
+        "group": "north_shuttle"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1134296,
+          36.0909201
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "天久保（筑波実験植物園）",
+        "stationKey": "天久保（筑波実験植物園）",
+        "group": "north_shuttle"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.110276,
+          36.0993397
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "テクノパーク桜入口",
+        "stationKey": "テクノパーク桜入口",
+        "group": "north_shuttle"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.1073181,
+          36.1087732
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "一ノ矢交差点",
+        "stationKey": "一ノ矢交差点",
+        "group": "north_shuttle"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0970801,
+          36.1225221
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "stop",
+        "name": "花畑（防災科学技術研究所）",
+        "stationKey": "花畑（防災科学技術研究所）",
+        "group": "north_shuttle"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.0925553,
+          36.1273578
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "つくばセンター",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.1126,
+            36.08234
+          ],
+          [
+            140.11264,
+            36.08221
+          ],
+          [
+            140.11264,
+            36.08207
+          ],
+          [
+            140.11256,
+            36.08191
+          ],
+          [
+            140.11241,
+            36.0818
+          ],
+          [
+            140.11223,
+            36.08181
+          ],
+          [
+            140.11209,
+            36.08191
+          ],
+          [
+            140.11163,
+            36.0826
+          ],
+          [
+            140.11101,
+            36.08357
+          ],
+          [
+            140.11039,
+            36.08447
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "吾妻小学校",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.11039,
+            36.08447
+          ],
+          [
+            140.11023,
+            36.08472
+          ],
+          [
+            140.10996,
+            36.08494
+          ],
+          [
+            140.10969,
+            36.08506
+          ],
+          [
+            140.10823,
+            36.08538
+          ],
+          [
+            140.10817,
+            36.08544
+          ],
+          [
+            140.10816,
+            36.08555
+          ],
+          [
+            140.1083,
+            36.08596
+          ],
+          [
+            140.10834,
+            36.08616
+          ],
+          [
+            140.10828,
+            36.08637
+          ],
+          [
+            140.10736,
+            36.08771
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "筑波大学春日エリア前",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10736,
+            36.08771
+          ],
+          [
+            140.10529,
+            36.09071
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "筑波メディカルセンター前",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10529,
+            36.09071
+          ],
+          [
+            140.10423,
+            36.09224
+          ],
+          [
+            140.10398,
+            36.09263
+          ],
+          [
+            140.10388,
+            36.093
+          ],
+          [
+            140.10385,
+            36.09319
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "筑波大学病院入口",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10385,
+            36.09319
+          ],
+          [
+            140.10371,
+            36.09396
+          ],
+          [
+            140.10349,
+            36.09444
+          ],
+          [
+            140.10285,
+            36.09549
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "追越学生宿舎前",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10285,
+            36.09549
+          ],
+          [
+            140.10262,
+            36.09585
+          ],
+          [
+            140.10247,
+            36.09617
+          ],
+          [
+            140.10239,
+            36.09649
+          ],
+          [
+            140.10217,
+            36.09753
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "平砂学生宿舎前",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10217,
+            36.09753
+          ],
+          [
+            140.10196,
+            36.09868
+          ],
+          [
+            140.10176,
+            36.09962
+          ],
+          [
+            140.10172,
+            36.09998
+          ],
+          [
+            140.10164,
+            36.10111
+          ],
+          [
+            140.10158,
+            36.10232
+          ],
+          [
+            140.1015,
+            36.10321
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "筑波大学西",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.1015,
+            36.10321
+          ],
+          [
+            140.10143,
+            36.10399
+          ],
+          [
+            140.10109,
+            36.1051
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "大学会館前",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10109,
+            36.1051
+          ],
+          [
+            140.10069,
+            36.10643
+          ],
+          [
+            140.10059,
+            36.10668
+          ],
+          [
+            140.09999,
+            36.10769
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "第一エリア前",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.09999,
+            36.10769
+          ],
+          [
+            140.09854,
+            36.11019
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "第三エリア前",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.09854,
+            36.11019
+          ],
+          [
+            140.09806,
+            36.11103
+          ],
+          [
+            140.09759,
+            36.11249
+          ],
+          [
+            140.09743,
+            36.11296
+          ],
+          [
+            140.09731,
+            36.11345
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "虹の広場",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.09731,
+            36.11345
+          ],
+          [
+            140.09673,
+            36.1153
+          ],
+          [
+            140.09597,
+            36.1178
+          ],
+          [
+            140.09595,
+            36.11805
+          ],
+          [
+            140.096,
+            36.11823
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "農林技術センター",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.096,
+            36.11823
+          ],
+          [
+            140.09608,
+            36.11848
+          ],
+          [
+            140.09667,
+            36.11934
+          ],
+          [
+            140.09763,
+            36.12072
+          ],
+          [
+            140.09809,
+            36.1205
+          ],
+          [
+            140.09827,
+            36.12037
+          ],
+          [
+            140.09919,
+            36.11941
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "一ノ矢学生宿舎前",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.09919,
+            36.11941
+          ],
+          [
+            140.10127,
+            36.11722
+          ],
+          [
+            140.10151,
+            36.11696
+          ],
+          [
+            140.10184,
+            36.11652
+          ],
+          [
+            140.10211,
+            36.11607
+          ],
+          [
+            140.10218,
+            36.11586
+          ],
+          [
+            140.10219,
+            36.11569
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "大学植物見本園",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10219,
+            36.11569
+          ],
+          [
+            140.10212,
+            36.11474
+          ],
+          [
+            140.10206,
+            36.11413
+          ],
+          [
+            140.10199,
+            36.11382
+          ],
+          [
+            140.10191,
+            36.11359
+          ],
+          [
+            140.10177,
+            36.11339
+          ],
+          [
+            140.10217,
+            36.11318
+          ],
+          [
+            140.1024,
+            36.11301
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "ＴＡＲＡセンター前",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.1024,
+            36.11301
+          ],
+          [
+            140.10261,
+            36.11281
+          ],
+          [
+            140.10288,
+            36.11243
+          ],
+          [
+            140.10363,
+            36.1113
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "筑波大学中央",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10363,
+            36.1113
+          ],
+          [
+            140.10392,
+            36.11083
+          ],
+          [
+            140.10407,
+            36.11048
+          ],
+          [
+            140.10409,
+            36.11015
+          ],
+          [
+            140.10406,
+            36.10957
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "大学公園",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10406,
+            36.10957
+          ],
+          [
+            140.10404,
+            36.10879
+          ],
+          [
+            140.1041,
+            36.1085
+          ],
+          [
+            140.10422,
+            36.10825
+          ],
+          [
+            140.10447,
+            36.10789
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "松美池",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10447,
+            36.10789
+          ],
+          [
+            140.10483,
+            36.10747
+          ],
+          [
+            140.10534,
+            36.10684
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "天久保三丁目",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10534,
+            36.10684
+          ],
+          [
+            140.10598,
+            36.10601
+          ],
+          [
+            140.10624,
+            36.10569
+          ],
+          [
+            140.10639,
+            36.10544
+          ],
+          [
+            140.10648,
+            36.10522
+          ],
+          [
+            140.10653,
+            36.10496
+          ],
+          [
+            140.10664,
+            36.10429
+          ],
+          [
+            140.10675,
+            36.10364
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "合宿所",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10675,
+            36.10364
+          ],
+          [
+            140.10696,
+            36.10233
+          ],
+          [
+            140.10698,
+            36.10201
+          ],
+          [
+            140.10695,
+            36.10174
+          ],
+          [
+            140.10684,
+            36.1015
+          ],
+          [
+            140.10645,
+            36.10103
+          ],
+          [
+            140.10589,
+            36.10045
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "天久保池",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10589,
+            36.10045
+          ],
+          [
+            140.10547,
+            36.09998
+          ],
+          [
+            140.10528,
+            36.0998
+          ],
+          [
+            140.10523,
+            36.09977
+          ],
+          [
+            140.10565,
+            36.09929
+          ],
+          [
+            140.10577,
+            36.09889
+          ],
+          [
+            140.10593,
+            36.09819
+          ],
+          [
+            140.10611,
+            36.09732
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "天久保二丁目",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10611,
+            36.09732
+          ],
+          [
+            140.10629,
+            36.09659
+          ],
+          [
+            140.10637,
+            36.09635
+          ],
+          [
+            140.10654,
+            36.09553
+          ],
+          [
+            140.10672,
+            36.09472
+          ],
+          [
+            140.1068,
+            36.09437
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "追越宿舎東",
+        "direction": "down",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.1068,
+            36.09437
+          ],
+          [
+            140.10694,
+            36.09374
+          ],
+          [
+            140.1071,
+            36.09307
+          ],
+          [
+            140.10709,
+            36.09296
+          ],
+          [
+            140.10698,
+            36.09289
+          ],
+          [
+            140.10585,
+            36.09238
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "メディカルセンター病院",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10583,
+            36.09242
+          ],
+          [
+            140.10695,
+            36.09294
+          ],
+          [
+            140.10702,
+            36.09301
+          ],
+          [
+            140.10706,
+            36.09309
+          ],
+          [
+            140.1069,
+            36.09375
+          ],
+          [
+            140.10676,
+            36.09438
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "追越宿舎東",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10676,
+            36.09438
+          ],
+          [
+            140.1066,
+            36.09513
+          ],
+          [
+            140.10644,
+            36.09585
+          ],
+          [
+            140.10633,
+            36.09636
+          ],
+          [
+            140.10625,
+            36.0966
+          ],
+          [
+            140.10608,
+            36.09732
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "天久保二丁目",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10608,
+            36.09732
+          ],
+          [
+            140.10589,
+            36.0982
+          ],
+          [
+            140.10573,
+            36.09891
+          ],
+          [
+            140.10565,
+            36.09921
+          ],
+          [
+            140.10557,
+            36.09935
+          ],
+          [
+            140.1052,
+            36.09975
+          ],
+          [
+            140.1052,
+            36.09981
+          ],
+          [
+            140.10533,
+            36.0999
+          ],
+          [
+            140.1056,
+            36.10018
+          ],
+          [
+            140.10584,
+            36.10047
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "天久保池",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10584,
+            36.10047
+          ],
+          [
+            140.1064,
+            36.10105
+          ],
+          [
+            140.10679,
+            36.10153
+          ],
+          [
+            140.10691,
+            36.10176
+          ],
+          [
+            140.10694,
+            36.10203
+          ],
+          [
+            140.10693,
+            36.10235
+          ],
+          [
+            140.10672,
+            36.10365
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "合宿所",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10672,
+            36.10365
+          ],
+          [
+            140.10661,
+            36.1043
+          ],
+          [
+            140.10649,
+            36.10497
+          ],
+          [
+            140.10644,
+            36.10522
+          ],
+          [
+            140.10635,
+            36.10543
+          ],
+          [
+            140.1062,
+            36.10568
+          ],
+          [
+            140.10594,
+            36.106
+          ],
+          [
+            140.10529,
+            36.10684
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "天久保三丁目",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10529,
+            36.10684
+          ],
+          [
+            140.10479,
+            36.10746
+          ],
+          [
+            140.10444,
+            36.10788
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "松美池",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10444,
+            36.10788
+          ],
+          [
+            140.10417,
+            36.10824
+          ],
+          [
+            140.10406,
+            36.1085
+          ],
+          [
+            140.104,
+            36.10879
+          ],
+          [
+            140.10401,
+            36.10958
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "大学公園",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10401,
+            36.10958
+          ],
+          [
+            140.10402,
+            36.11015
+          ],
+          [
+            140.10401,
+            36.11048
+          ],
+          [
+            140.10387,
+            36.11082
+          ],
+          [
+            140.10356,
+            36.1113
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "筑波大学中央",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10356,
+            36.1113
+          ],
+          [
+            140.10284,
+            36.11242
+          ],
+          [
+            140.10257,
+            36.1128
+          ],
+          [
+            140.10237,
+            36.113
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "ＴＡＲＡセンター前",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10237,
+            36.113
+          ],
+          [
+            140.10214,
+            36.11316
+          ],
+          [
+            140.10176,
+            36.11335
+          ],
+          [
+            140.10173,
+            36.11339
+          ],
+          [
+            140.10175,
+            36.11344
+          ],
+          [
+            140.10188,
+            36.11361
+          ],
+          [
+            140.10196,
+            36.11383
+          ],
+          [
+            140.10202,
+            36.11415
+          ],
+          [
+            140.10208,
+            36.11476
+          ],
+          [
+            140.10215,
+            36.11569
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "大学植物見本園",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10215,
+            36.11569
+          ],
+          [
+            140.10214,
+            36.11586
+          ],
+          [
+            140.10208,
+            36.11607
+          ],
+          [
+            140.10181,
+            36.11651
+          ],
+          [
+            140.10148,
+            36.11695
+          ],
+          [
+            140.10124,
+            36.11721
+          ],
+          [
+            140.09916,
+            36.1194
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "一ノ矢学生宿舎前",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.09916,
+            36.1194
+          ],
+          [
+            140.09824,
+            36.12035
+          ],
+          [
+            140.09807,
+            36.12048
+          ],
+          [
+            140.09765,
+            36.12069
+          ],
+          [
+            140.09671,
+            36.11933
+          ],
+          [
+            140.09611,
+            36.11847
+          ],
+          [
+            140.09603,
+            36.11823
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "農林技術センター",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.09603,
+            36.11823
+          ],
+          [
+            140.09598,
+            36.11806
+          ],
+          [
+            140.09599,
+            36.11781
+          ],
+          [
+            140.09676,
+            36.1153
+          ],
+          [
+            140.09733,
+            36.11343
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "虹の広場",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.09733,
+            36.11343
+          ],
+          [
+            140.09747,
+            36.11297
+          ],
+          [
+            140.09755,
+            36.1129
+          ],
+          [
+            140.09765,
+            36.11285
+          ],
+          [
+            140.09761,
+            36.11274
+          ],
+          [
+            140.0976,
+            36.1126
+          ],
+          [
+            140.09763,
+            36.1125
+          ],
+          [
+            140.0981,
+            36.11106
+          ],
+          [
+            140.09859,
+            36.1102
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "第三エリア前",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.09859,
+            36.1102
+          ],
+          [
+            140.10003,
+            36.10771
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "第一エリア前",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10003,
+            36.10771
+          ],
+          [
+            140.10064,
+            36.1067
+          ],
+          [
+            140.10074,
+            36.10644
+          ],
+          [
+            140.10113,
+            36.10512
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "大学会館前",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10113,
+            36.10512
+          ],
+          [
+            140.10147,
+            36.10401
+          ],
+          [
+            140.10154,
+            36.10322
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "筑波大学西",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10154,
+            36.10322
+          ],
+          [
+            140.10162,
+            36.10233
+          ],
+          [
+            140.10167,
+            36.10113
+          ],
+          [
+            140.1017,
+            36.10079
+          ],
+          [
+            140.10186,
+            36.10045
+          ],
+          [
+            140.10209,
+            36.10018
+          ],
+          [
+            140.10177,
+            36.09992
+          ],
+          [
+            140.1018,
+            36.09963
+          ],
+          [
+            140.102,
+            36.0987
+          ],
+          [
+            140.10221,
+            36.09754
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "平砂学生宿舎前",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10221,
+            36.09754
+          ],
+          [
+            140.10242,
+            36.09651
+          ],
+          [
+            140.10251,
+            36.09619
+          ],
+          [
+            140.10266,
+            36.09587
+          ],
+          [
+            140.10288,
+            36.09551
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "追越学生宿舎前",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10288,
+            36.09551
+          ],
+          [
+            140.10352,
+            36.09446
+          ],
+          [
+            140.10374,
+            36.09398
+          ],
+          [
+            140.10389,
+            36.09319
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "筑波大学病院入口",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10389,
+            36.09319
+          ],
+          [
+            140.10392,
+            36.09302
+          ],
+          [
+            140.10401,
+            36.09264
+          ],
+          [
+            140.10426,
+            36.09226
+          ],
+          [
+            140.10533,
+            36.09073
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "筑波メディカルセンター前",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10533,
+            36.09073
+          ],
+          [
+            140.1074,
+            36.08773
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "筑波大学春日エリア前",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.1074,
+            36.08773
+          ],
+          [
+            140.10832,
+            36.08639
+          ],
+          [
+            140.10839,
+            36.08617
+          ],
+          [
+            140.10835,
+            36.08597
+          ],
+          [
+            140.10821,
+            36.08556
+          ],
+          [
+            140.10822,
+            36.08545
+          ],
+          [
+            140.10827,
+            36.0854
+          ],
+          [
+            140.1097,
+            36.08508
+          ],
+          [
+            140.10998,
+            36.08496
+          ],
+          [
+            140.11026,
+            36.08474
+          ],
+          [
+            140.11042,
+            36.08449
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "吾妻小学校",
+        "direction": "up",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.11042,
+            36.08449
+          ],
+          [
+            140.11104,
+            36.08359
+          ],
+          [
+            140.11168,
+            36.08262
+          ],
+          [
+            140.11215,
+            36.08195
+          ],
+          [
+            140.11226,
+            36.08186
+          ],
+          [
+            140.11239,
+            36.08185
+          ],
+          [
+            140.11253,
+            36.08196
+          ],
+          [
+            140.11249,
+            36.08207
+          ],
+          [
+            140.11237,
+            36.08212
+          ],
+          [
+            140.11211,
+            36.08247
+          ],
+          [
+            140.11209,
+            36.08254
+          ],
+          [
+            140.11212,
+            36.08262
+          ],
+          [
+            140.11226,
+            36.08267
+          ],
+          [
+            140.11235,
+            36.08266
+          ],
+          [
+            140.11243,
+            36.08258
+          ],
+          [
+            140.1126,
+            36.08234
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "北部シャトルつくばセンター",
+        "direction": "down",
+        "group": "north_shuttle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.11219,
+            36.08264
+          ],
+          [
+            140.11228,
+            36.08267
+          ],
+          [
+            140.11238,
+            36.08265
+          ],
+          [
+            140.11261,
+            36.08232
+          ],
+          [
+            140.11265,
+            36.08217
+          ],
+          [
+            140.11255,
+            36.08195
+          ],
+          [
+            140.11242,
+            36.08184
+          ],
+          [
+            140.11226,
+            36.08176
+          ],
+          [
+            140.11158,
+            36.08274
+          ],
+          [
+            140.11162,
+            36.08283
+          ],
+          [
+            140.11702,
+            36.08532
+          ],
+          [
+            140.11715,
+            36.08545
+          ],
+          [
+            140.11716,
+            36.08567
+          ],
+          [
+            140.11334,
+            36.09093
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "妻木",
+        "direction": "down",
+        "group": "north_shuttle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.11334,
+            36.09093
+          ],
+          [
+            140.1119,
+            36.09313
+          ],
+          [
+            140.11109,
+            36.095
+          ],
+          [
+            140.11069,
+            36.09669
+          ],
+          [
+            140.11037,
+            36.09854
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "天久保（筑波実験植物園）",
+        "direction": "down",
+        "group": "north_shuttle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.11037,
+            36.09854
+          ],
+          [
+            140.10946,
+            36.1039
+          ],
+          [
+            140.10901,
+            36.10549
+          ],
+          [
+            140.1084,
+            36.10692
+          ],
+          [
+            140.1077,
+            36.10808
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "テクノパーク桜入口",
+        "direction": "down",
+        "group": "north_shuttle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.1077,
+            36.10808
+          ],
+          [
+            140.10668,
+            36.10969
+          ],
+          [
+            140.1022,
+            36.11664
+          ],
+          [
+            140.10101,
+            36.11816
+          ],
+          [
+            140.0989,
+            36.12045
+          ],
+          [
+            140.09699,
+            36.12252
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "一ノ矢交差点",
+        "direction": "down",
+        "group": "north_shuttle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.09699,
+            36.12252
+          ],
+          [
+            140.09299,
+            36.12685
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "花畑（防災科学技術研究所）",
+        "direction": "up",
+        "group": "north_shuttle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.09307,
+            36.12691
+          ],
+          [
+            140.09709,
+            36.12259
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "一ノ矢交差点",
+        "direction": "up",
+        "group": "north_shuttle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.09709,
+            36.12259
+          ],
+          [
+            140.1002,
+            36.11926
+          ],
+          [
+            140.10194,
+            36.11721
+          ],
+          [
+            140.10493,
+            36.11265
+          ],
+          [
+            140.10784,
+            36.10815
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "テクノパーク桜入口",
+        "direction": "up",
+        "group": "north_shuttle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10784,
+            36.10815
+          ],
+          [
+            140.10908,
+            36.10568
+          ],
+          [
+            140.10968,
+            36.10338
+          ],
+          [
+            140.11052,
+            36.09852
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "天久保（筑波実験植物園）",
+        "direction": "up",
+        "group": "north_shuttle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.11052,
+            36.09852
+          ],
+          [
+            140.11091,
+            36.09626
+          ],
+          [
+            140.11134,
+            36.09475
+          ],
+          [
+            140.11222,
+            36.09286
+          ],
+          [
+            140.11346,
+            36.09096
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "妻木",
+        "direction": "up",
+        "group": "north_shuttle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.11346,
+            36.09096
+          ],
+          [
+            140.11729,
+            36.08571
+          ],
+          [
+            140.1174,
+            36.08554
+          ],
+          [
+            140.11741,
+            36.0854
+          ],
+          [
+            140.11733,
+            36.08528
+          ],
+          [
+            140.11711,
+            36.08516
+          ],
+          [
+            140.11175,
+            36.08275
+          ],
+          [
+            140.1117,
+            36.08269
+          ],
+          [
+            140.11169,
+            36.0826
+          ],
+          [
+            140.11226,
+            36.08177
+          ],
+          [
+            140.11245,
+            36.08186
+          ],
+          [
+            140.11255,
+            36.08197
+          ],
+          [
+            140.11248,
+            36.08206
+          ],
+          [
+            140.11237,
+            36.08211
+          ],
+          [
+            140.11222,
+            36.0823
+          ],
+          [
+            140.11208,
+            36.08252
+          ],
+          [
+            140.11211,
+            36.08261
+          ],
+          [
+            140.11219,
+            36.08266
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "筑波メディカルセンター前",
+        "direction": "connector_to_medical_center_hospital",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10529,
+            36.09071
+          ],
+          [
+            140.10459,
+            36.09173
+          ],
+          [
+            140.10458,
+            36.09179
+          ],
+          [
+            140.1046,
+            36.09185
+          ],
+          [
+            140.10468,
+            36.09191
+          ],
+          [
+            140.10529,
+            36.09219
+          ],
+          [
+            140.10583,
+            36.09242
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "kind": "segment",
+        "fromStationKey": "メディカルセンター病院",
+        "direction": "connector_to_medical_center_front",
+        "group": "kantetsu"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.10585,
+            36.09238
+          ],
+          [
+            140.10532,
+            36.09213
+          ],
+          [
+            140.10473,
+            36.09187
+          ],
+          [
+            140.10464,
+            36.09182
+          ],
+          [
+            140.10461,
+            36.09178
+          ],
+          [
+            140.10462,
+            36.09173
+          ],
+          [
+            140.10533,
+            36.09073
+          ]
+        ]
+      }
+    }
+  ]
+}
