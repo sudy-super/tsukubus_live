@@ -405,7 +405,7 @@ function mergeVehiclePayload(previousPayload, refreshState, previousLastSuccessf
 
   return finalizeVehiclePayload({
     generatedAt: refreshState.generatedAt,
-    lastSuccessfulAt: previousLastSuccessfulAt ?? previousPayload.lastSuccessfulAt ?? refreshState.generatedAt,
+    lastSuccessfulAt: refreshState.generatedAt,
     queryWindowMinutes: refreshState.queryWindowMinutes,
     vehicles: [...mergedByTrip.values()],
     stale: true,

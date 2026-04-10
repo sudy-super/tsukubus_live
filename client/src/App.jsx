@@ -195,28 +195,40 @@ export default function App() {
 
   useEffect(() => {
     let cancelled = false;
-    let intervalId;
+    let timeoutId;
+    let activeController = null;
 
     async function loadVehicles() {
+      const controller = new AbortController();
+      activeController = controller;
       try {
-        const payload = await fetchJson("/api/vehicles");
-        if (cancelled) {
+        const payload = await fetchJson("/api/vehicles", { signal: controller.signal });
+        if (cancelled || activeController !== controller) {
           return;
         }
 
         setVehicles(payload.vehicles ?? []);
         setLastUpdatedAt(payload.lastSuccessfulAt || payload.generatedAt || null);
       } catch (error) {
+        if (cancelled || controller.signal.aborted) {
+          return;
+        }
         console.error(error);
+      } finally {
+        if (!cancelled && activeController === controller) {
+          timeoutId = window.setTimeout(loadVehicles, 5_000);
+        }
       }
     }
 
     loadVehicles();
-    intervalId = window.setInterval(loadVehicles, 5_000);
 
     return () => {
       cancelled = true;
-      window.clearInterval(intervalId);
+      activeController?.abort();
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
     };
   }, []);
 
@@ -1283,8 +1295,8 @@ function loadGoogleMapsApi(apiKey) {
   return googleMapsApiPromise;
 }
 
-async function fetchJson(url) {
-  const response = await fetch(url);
+async function fetchJson(url, options = {}) {
+  const response = await fetch(url, options);
   if (!response.ok) {
     throw new Error(`${url} failed with ${response.status}`);
   }
