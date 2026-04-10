@@ -32,6 +32,7 @@ const anchorQueries = [
 ];
 
 const queryOffsetsMinutes = [-60, -45, -30, -15, 0, 15, 30];
+const jstOffsetMinutes = 9 * 60;
 
 export function createLiveMapService({
   staticData,
@@ -859,17 +860,15 @@ function parseApiDateTime(text) {
   if (!text) {
     return null;
   }
-  const normalized = text.replace(" ", "T");
+  const normalized = text.replace(" ", "T") + ":00+09:00";
   const date = new Date(normalized);
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
 function timeStringToDate(baseDate, hhmm) {
   const [hours, minutes] = hhmm.split(":").map(Number);
-  const date = new Date(baseDate);
-  date.setSeconds(0, 0);
-  date.setHours(hours, minutes, 0, 0);
-  return date;
+  const jst = toJstParts(baseDate);
+  return new Date(`${jst.year}-${pad2(jst.month)}-${pad2(jst.day)}T${pad2(hours)}:${pad2(minutes)}:00+09:00`);
 }
 
 function rollOverIfNeeded(start, end) {
@@ -884,23 +883,32 @@ function addMinutes(date, minutes) {
 }
 
 function isSameLocalDate(left, right) {
-  return (
-    left.getFullYear() === right.getFullYear() &&
-    left.getMonth() === right.getMonth() &&
-    left.getDate() === right.getDate()
-  );
+  const leftJst = toJstParts(left);
+  const rightJst = toJstParts(right);
+  return leftJst.year === rightJst.year && leftJst.month === rightJst.month && leftJst.day === rightJst.day;
 }
 
 function formatApiDateTime(date) {
-  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())} ${pad2(
-    date.getHours(),
-  )}:${pad2(date.getMinutes())}`;
+  const jst = toJstParts(date);
+  return `${jst.year}-${pad2(jst.month)}-${pad2(jst.day)} ${pad2(jst.hours)}:${pad2(jst.minutes)}`;
 }
 
 function formatShortTime(date) {
-  return `${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
+  const jst = toJstParts(date);
+  return `${pad2(jst.hours)}:${pad2(jst.minutes)}`;
 }
 
 function pad2(value) {
   return String(value).padStart(2, "0");
+}
+
+function toJstParts(date) {
+  const shifted = new Date(date.getTime() + jstOffsetMinutes * 60_000);
+  return {
+    year: shifted.getUTCFullYear(),
+    month: shifted.getUTCMonth() + 1,
+    day: shifted.getUTCDate(),
+    hours: shifted.getUTCHours(),
+    minutes: shifted.getUTCMinutes(),
+  };
 }
