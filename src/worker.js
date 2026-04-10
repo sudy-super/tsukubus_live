@@ -12,12 +12,6 @@ export default {
       return json(liveMapService.getStopsPayload());
     }
 
-    if (request.method === "GET" && url.pathname === "/api/config") {
-      return json({
-        googleMapsApiKey: env.GOOGLE_MAPS_API_KEY || null,
-      });
-    }
-
     if (request.method === "GET" && url.pathname === "/api/routes") {
       return json(liveMapService.getRoutesPayload());
     }

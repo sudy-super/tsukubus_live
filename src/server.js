@@ -23,12 +23,6 @@ app.get("/api/stops", (_req, res) => {
   res.json(liveMapService.getStopsPayload());
 });
 
-app.get("/api/config", (_req, res) => {
-  res.json({
-    googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || null,
-  });
-});
-
 app.get("/api/routes", (_req, res) => {
   res.json(liveMapService.getRoutesPayload());
 });
