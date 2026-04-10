@@ -455,22 +455,34 @@ export default function App() {
             }
 
             const sheetElement = sheetContentRef.current;
+            const currentHeight = resolvedMobileSheetVisibleHeight ?? mobileSheetHeightRef.current;
+            const collapsedHeight = getMobileSheetCollapsedHeight(viewportHeight);
+            const defaultHeight = getDefaultMobileSheetHeight(viewportHeight);
+            const maxHeight = getExpandedMobileSheetHeight(viewportHeight);
+
             if (sheetElement && sheetElement.scrollTop <= 0 && event.deltaY < -12) {
-              if (isMobileSheetExpanded) {
+              if (currentHeight >= maxHeight - 2) {
                 event.preventDefault();
                 collapseMobileSheetToDefault();
                 return;
               }
 
-              if (isMobileSheetAtDefault) {
+              if (currentHeight > collapsedHeight + 2) {
                 event.preventDefault();
                 collapseMobileSheetToCollapsed();
                 return;
               }
             }
 
-            event.preventDefault();
-            expandMobileSheet();
+            if (event.deltaY > 12 && currentHeight < maxHeight - 2) {
+              event.preventDefault();
+              if (currentHeight <= defaultHeight + 2) {
+                setMobileSheetHeight(defaultHeight);
+                return;
+              }
+
+              expandMobileSheet();
+            }
           }}
           onTouchStart={(event) => {
             if (!isMobileSheet) {
@@ -496,40 +508,43 @@ export default function App() {
               return;
             }
 
-            if (isMobileSheetExpanded || isMobileSheetAtDefault) {
-              const sheetElement = sheetContentRef.current;
-              const isPullingDown = currentY > startY;
-              const startedAtTop = sheetTouchStartScrollTopRef.current <= 0;
-              const isStillAtTop = (sheetElement?.scrollTop ?? 0) <= 0;
+            const sheetElement = sheetContentRef.current;
+            const isPullingDown = currentY > startY;
+            const currentHeight = resolvedMobileSheetVisibleHeight ?? mobileSheetHeightRef.current;
+            const maxHeight = getExpandedMobileSheetHeight(viewportHeight);
+            const isExpandedHeight = currentHeight >= maxHeight - 2;
+            const startedAtTop = sheetTouchStartScrollTopRef.current <= 0;
+            const isStillAtTop = (sheetElement?.scrollTop ?? 0) <= 0;
 
-              if (!sheetContentPullStateRef.current && isPullingDown && startedAtTop && isStillAtTop) {
+            if (!sheetContentPullStateRef.current) {
+              const shouldStartPull = isExpandedHeight
+                ? isPullingDown && startedAtTop && isStillAtTop
+                : true;
+
+              if (shouldStartPull) {
                 sheetContentPullStateRef.current = {
                   startY,
-                  startHeight: resolvedMobileSheetVisibleHeight ?? mobileSheetHeightRef.current,
-                  currentHeight: resolvedMobileSheetVisibleHeight ?? mobileSheetHeightRef.current,
+                  startHeight: currentHeight,
+                  currentHeight,
                   minHeight: getMobileSheetCollapsedHeight(viewportHeight),
                   defaultHeight: getDefaultMobileSheetHeight(viewportHeight),
-                  maxHeight: getExpandedMobileSheetHeight(viewportHeight),
+                  maxHeight,
                 };
               }
-
-              if (sheetContentPullStateRef.current) {
-                event.preventDefault();
-                const pullState = sheetContentPullStateRef.current;
-                const nextHeight = clampSheetHeight(
-                  pullState.startHeight + (pullState.startY - currentY),
-                  pullState.minHeight,
-                  pullState.maxHeight,
-                );
-                pullState.currentHeight = nextHeight;
-                setDragSheetHeight(nextHeight);
-              }
-              return;
             }
 
-            event.preventDefault();
-            sheetTouchStartYRef.current = null;
-            expandMobileSheet();
+            if (sheetContentPullStateRef.current) {
+              event.preventDefault();
+              const pullState = sheetContentPullStateRef.current;
+              const nextHeight = clampSheetHeight(
+                pullState.startHeight + (pullState.startY - currentY),
+                pullState.minHeight,
+                pullState.maxHeight,
+              );
+              pullState.currentHeight = nextHeight;
+              setDragSheetHeight(nextHeight);
+              return;
+            }
           }}
           onTouchEnd={() => {
             const pullState = sheetContentPullStateRef.current;
