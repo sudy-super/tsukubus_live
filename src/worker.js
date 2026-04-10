@@ -3,9 +3,10 @@ import { staticData } from "./generated/static-data.js";
 import { createLiveMapService } from "./live-map-service.js";
 
 const liveMapService = createLiveMapService({ staticData, campusMapData });
+const vehicleRequestTimeoutMs = 4_500;
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     if (request.method === "GET" && url.pathname === "/api/stops") {
@@ -25,9 +26,29 @@ export default {
     }
 
     if (request.method === "GET" && url.pathname === "/api/vehicles") {
+      const now = new Date();
+
+      if (liveMapService.hasVehiclePayload() && !liveMapService.isVehiclePayloadFresh(now)) {
+        ctx.waitUntil(liveMapService.refreshVehiclePayload(now));
+        return json(
+          liveMapService.getCachedVehiclePayload({
+            stale: true,
+            generatedAt: now.toISOString(),
+          }),
+        );
+      }
+
       try {
-        return json(await liveMapService.getVehiclePayload());
+        return json(await withTimeout(liveMapService.getVehiclePayload(), vehicleRequestTimeoutMs));
       } catch (error) {
+        const cachedPayload = liveMapService.getCachedVehiclePayload({
+          stale: true,
+          generatedAt: new Date().toISOString(),
+        });
+        if (cachedPayload) {
+          return json(cachedPayload);
+        }
+
         return json(
           {
             error: error instanceof Error ? error.message : "unknown_error",
@@ -50,8 +71,28 @@ export default {
 function json(payload, init = {}) {
   const headers = new Headers(init.headers);
   headers.set("content-type", "application/json; charset=utf-8");
+  headers.set("cache-control", "no-store, no-cache, must-revalidate, max-age=0");
   return new Response(JSON.stringify(payload), {
     ...init,
     headers,
   });
+}
+
+async function withTimeout(promise, timeoutMs) {
+  let timeoutId = null;
+
+  try {
+    return await Promise.race([
+      promise,
+      new Promise((_, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(new Error(`vehicle payload timed out after ${timeoutMs}ms`));
+        }, timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+  }
 }

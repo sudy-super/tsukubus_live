@@ -75,47 +75,99 @@ export function createLiveMapService({
         lastSuccessfulAt: vehicleCache.lastSuccessfulAt,
       };
     },
-    async getVehiclePayload() {
+    hasVehiclePayload() {
+      return Boolean(vehicleCache.value);
+    },
+    isVehiclePayloadFresh(now = new Date()) {
+      return isVehicleCacheFresh(now);
+    },
+    getCachedVehiclePayload({ stale = false, generatedAt } = {}) {
+      if (!vehicleCache.value) {
+        return null;
+      }
+
+      if (!stale) {
+        return vehicleCache.value;
+      }
+
+      const payload = {
+        ...vehicleCache.value,
+        stale: true,
+      };
+
+      if (generatedAt) {
+        payload.generatedAt = generatedAt;
+      }
+
+      if (vehicleCache.error) {
+        payload.upstreamError = vehicleCache.error;
+      }
+
+      return payload;
+    },
+    async refreshVehiclePayload(now = new Date()) {
+      return startVehicleRefresh(now);
+    },
+    async getVehiclePayload({ preferCache = false } = {}) {
       const now = new Date();
-      if (vehicleCache.value && vehicleCache.lastSuccessfulAt) {
-        const age = now.getTime() - new Date(vehicleCache.lastSuccessfulAt).getTime();
-        if (age < updateIntervalMs) {
-          return vehicleCache.value;
-        }
+
+      if (vehicleCache.value && isVehicleCacheFresh(now)) {
+        return vehicleCache.value;
       }
 
-      if (vehicleCache.inFlight) {
-        return vehicleCache.inFlight;
-      }
-
-      const previousPayload = vehicleCache.value;
-      const previousLastSuccessfulAt = vehicleCache.lastSuccessfulAt;
-      vehicleCache.inFlight = refreshVehicles(now)
-        .then((refreshState) => {
-          const payload = mergeVehiclePayload(previousPayload, refreshState, previousLastSuccessfulAt);
-          vehicleCache.value = payload;
-          vehicleCache.lastSuccessfulAt = payload.lastSuccessfulAt;
-          vehicleCache.error = refreshState.upstreamError ?? null;
-          return payload;
-        })
-        .catch((error) => {
-          vehicleCache.error = error instanceof Error ? error.message : "unknown_error";
-          if (vehicleCache.value) {
-            return {
-              ...vehicleCache.value,
-              stale: true,
-              upstreamError: vehicleCache.error,
-            };
-          }
-          throw error;
-        })
-        .finally(() => {
-          vehicleCache.inFlight = null;
+      if (preferCache && vehicleCache.value) {
+        void startVehicleRefresh(now);
+        return this.getCachedVehiclePayload({
+          stale: true,
+          generatedAt: now.toISOString(),
         });
+      }
 
-      return vehicleCache.inFlight;
+      return startVehicleRefresh(now);
     },
   };
+
+  function isVehicleCacheFresh(now) {
+    if (!vehicleCache.value || !vehicleCache.lastSuccessfulAt) {
+      return false;
+    }
+
+    const age = now.getTime() - new Date(vehicleCache.lastSuccessfulAt).getTime();
+    return age < updateIntervalMs;
+  }
+
+  function startVehicleRefresh(now) {
+    if (vehicleCache.inFlight) {
+      return vehicleCache.inFlight;
+    }
+
+    const previousPayload = vehicleCache.value;
+    const previousLastSuccessfulAt = vehicleCache.lastSuccessfulAt;
+    vehicleCache.inFlight = refreshVehicles(now)
+      .then((refreshState) => {
+        const payload = mergeVehiclePayload(previousPayload, refreshState, previousLastSuccessfulAt);
+        vehicleCache.value = payload;
+        vehicleCache.lastSuccessfulAt = payload.lastSuccessfulAt;
+        vehicleCache.error = refreshState.upstreamError ?? null;
+        return payload;
+      })
+      .catch((error) => {
+        vehicleCache.error = error instanceof Error ? error.message : "unknown_error";
+        if (vehicleCache.value) {
+          return {
+            ...vehicleCache.value,
+            stale: true,
+            upstreamError: vehicleCache.error,
+          };
+        }
+        throw error;
+      })
+      .finally(() => {
+        vehicleCache.inFlight = null;
+      });
+
+    return vehicleCache.inFlight;
+  }
 
   async function refreshVehicles(now) {
     const routeCandidateState = await fetchRouteCandidates(now);

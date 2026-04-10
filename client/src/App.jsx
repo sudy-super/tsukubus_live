@@ -7,6 +7,8 @@ const mobileSheetBreakpoint = 980;
 const mobileSheetCollapsedHeight = 68;
 const mobileSheetDefaultRatio = 0.4;
 const mobileSheetExpandedRatio = 0.92;
+const vehicleRefreshIntervalMs = 5_000;
+const vehicleRequestTimeoutMs = 4_500;
 const copyrightYear = new Date().getFullYear();
 
 const googleMapsStyles = [
@@ -195,14 +197,26 @@ export default function App() {
 
   useEffect(() => {
     let cancelled = false;
-    let timeoutId;
     let activeController = null;
+    let requestInFlight = false;
 
     async function loadVehicles() {
+      if (requestInFlight) {
+        return;
+      }
+
+      requestInFlight = true;
       const controller = new AbortController();
+      const timeoutId = window.setTimeout(() => {
+        controller.abort(new Error(`vehicle api timed out after ${vehicleRequestTimeoutMs}ms`));
+      }, vehicleRequestTimeoutMs);
       activeController = controller;
+
       try {
-        const payload = await fetchJson("/api/vehicles", { signal: controller.signal });
+        const payload = await fetchJson("/api/vehicles", {
+          signal: controller.signal,
+          cache: "no-store",
+        });
         if (cancelled || activeController !== controller) {
           return;
         }
@@ -210,25 +224,31 @@ export default function App() {
         setVehicles(payload.vehicles ?? []);
         setLastUpdatedAt(payload.lastSuccessfulAt || payload.generatedAt || null);
       } catch (error) {
-        if (cancelled || controller.signal.aborted) {
+        if (cancelled) {
           return;
         }
-        console.error(error);
-      } finally {
-        if (!cancelled && activeController === controller) {
-          timeoutId = window.setTimeout(loadVehicles, 5_000);
+
+        if (!controller.signal.aborted) {
+          console.error(error);
         }
+      } finally {
+        window.clearTimeout(timeoutId);
+        if (activeController === controller) {
+          activeController = null;
+        }
+        requestInFlight = false;
       }
     }
 
-    loadVehicles();
+    void loadVehicles();
+    const intervalId = window.setInterval(() => {
+      void loadVehicles();
+    }, vehicleRefreshIntervalMs);
 
     return () => {
       cancelled = true;
+      window.clearInterval(intervalId);
       activeController?.abort();
-      if (timeoutId) {
-        window.clearTimeout(timeoutId);
-      }
     };
   }, []);
 

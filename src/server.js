@@ -16,8 +16,13 @@ const distIndexPath = path.join(distDir, "index.html");
 const app = express();
 const port = Number(process.env.PORT || 3000);
 const liveMapService = createLiveMapService({ staticData, campusMapData });
+const vehicleRequestTimeoutMs = 4_500;
 
 app.use(express.static(distDir, { index: false }));
+app.use("/api", (_req, res, next) => {
+  res.set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+  next();
+});
 
 app.get("/api/stops", (_req, res) => {
   res.json(liveMapService.getStopsPayload());
@@ -36,9 +41,33 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.get("/api/vehicles", async (_req, res) => {
+  const now = new Date();
+
+  if (liveMapService.hasVehiclePayload() && !liveMapService.isVehiclePayloadFresh(now)) {
+    void liveMapService.refreshVehiclePayload(now).catch((error) => {
+      console.error("vehicle refresh failed", error);
+    });
+    res.json(
+      liveMapService.getCachedVehiclePayload({
+        stale: true,
+        generatedAt: now.toISOString(),
+      }),
+    );
+    return;
+  }
+
   try {
-    res.json(await liveMapService.getVehiclePayload());
+    res.json(await withTimeout(liveMapService.getVehiclePayload(), vehicleRequestTimeoutMs));
   } catch (error) {
+    const cachedPayload = liveMapService.getCachedVehiclePayload({
+      stale: true,
+      generatedAt: new Date().toISOString(),
+    });
+    if (cachedPayload) {
+      res.json(cachedPayload);
+      return;
+    }
+
     res.status(502).json({
       error: error instanceof Error ? error.message : "unknown_error",
       lastSuccessfulAt: liveMapService.getHealthPayload().lastSuccessfulAt,
@@ -62,3 +91,22 @@ app.get(/.*/, (_req, res) => {
 app.listen(port, () => {
   console.log(`live map server listening on http://localhost:${port}`);
 });
+
+async function withTimeout(promise, timeoutMs) {
+  let timeoutId = null;
+
+  try {
+    return await Promise.race([
+      promise,
+      new Promise((_, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(new Error(`vehicle payload timed out after ${timeoutMs}ms`));
+        }, timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+  }
+}
