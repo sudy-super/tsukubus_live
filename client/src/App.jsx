@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const googleMapsApiKey = import.meta.env.GOOGLE_MAPS_API_KEY;
 const stopIconUrl = "/bus_icon.png";
@@ -310,14 +310,38 @@ export default function App() {
     ? Math.abs(resolvedMobileSheetVisibleHeight - getDefaultMobileSheetHeight(viewportHeight)) <= 2
     : false;
 
-  const handleMapClearSelection = () => {
+  const handleMapClearSelection = useCallback(() => {
     setSelectedVehicleId(null);
     setSelectedStopId(null);
     pendingDetailScrollRef.current = false;
     if (isMobileSheetExpanded) {
       collapseMobileSheetToDefault();
     }
-  };
+  }, [isMobileSheetExpanded]);
+
+  const handleMapInteract = useCallback(() => {
+    if (isMobileSheetAtDefault) {
+      collapseMobileSheetToCollapsed();
+    }
+  }, [isMobileSheetAtDefault]);
+
+  const handleSelectVehicle = useCallback((vehicle) => {
+    pendingDetailScrollRef.current = isMobileSheet;
+    setSelectedVehicleId(vehicle.tripId);
+    setSelectedStopId(null);
+    if (isMobileSheet) {
+      expandMobileSheet();
+    }
+  }, [isMobileSheet]);
+
+  const handleSelectStop = useCallback((stop) => {
+    pendingDetailScrollRef.current = isMobileSheet;
+    setSelectedStopId(stop.id);
+    setSelectedVehicleId(null);
+    if (isMobileSheet) {
+      expandMobileSheet();
+    }
+  }, [isMobileSheet]);
 
   useEffect(() => {
     if (!isMobileSheet || !isMobileSheetExpanded || !selectedDetailKey || !pendingDetailScrollRef.current) {
@@ -353,27 +377,9 @@ export default function App() {
         selectedVehicleId={selectedVehicleId}
         selectedStopId={selectedStopId}
         onClearSelection={handleMapClearSelection}
-        onMapInteract={() => {
-          if (isMobileSheetAtDefault) {
-            collapseMobileSheetToCollapsed();
-          }
-        }}
-        onSelectVehicle={(vehicle) => {
-          pendingDetailScrollRef.current = isMobileSheet;
-          setSelectedVehicleId(vehicle.tripId);
-          setSelectedStopId(null);
-          if (isMobileSheet) {
-            expandMobileSheet();
-          }
-        }}
-        onSelectStop={(stop) => {
-          pendingDetailScrollRef.current = isMobileSheet;
-          setSelectedStopId(stop.id);
-          setSelectedVehicleId(null);
-          if (isMobileSheet) {
-            expandMobileSheet();
-          }
-        }}
+        onMapInteract={handleMapInteract}
+        onSelectVehicle={handleSelectVehicle}
+        onSelectStop={handleSelectStop}
       />
 
       <section className="floating-status">
