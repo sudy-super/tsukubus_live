@@ -6,10 +6,15 @@
   "main": "src/server.js",
   "scripts": {
     "dev": "concurrently -k \"npm:dev:server\" \"npm:dev:client\"",
+    "predev:server": "node scripts/generate-runtime-data.mjs",
     "dev:server": "node --watch src/server.js",
     "dev:client": "vite",
+    "prebuild": "node scripts/generate-runtime-data.mjs",
     "build": "vite build",
-    "start": "node src/server.js"
+    "prestart": "node scripts/generate-runtime-data.mjs",
+    "start": "node src/server.js",
+    "dev:cf": "wrangler dev",
+    "deploy:cf": "wrangler deploy"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +27,7 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^6.0.1",
     "concurrently": "^9.2.1",
-    "vite": "^8.0.8"
+    "vite": "^8.0.8",
+    "wrangler": "^4.81.1"
   }
 }
