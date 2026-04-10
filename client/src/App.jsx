@@ -400,6 +400,7 @@ export default function App() {
               return;
             }
 
+            event.preventDefault();
             const minHeight = getMobileSheetCollapsedHeight(viewportHeight);
             const defaultHeight = getDefaultMobileSheetHeight(viewportHeight);
             const maxHeight = getExpandedMobileSheetHeight(viewportHeight);
