@@ -53,6 +53,7 @@ export default function App() {
   const sheetDragStateRef = useRef(null);
   const ignoreSheetHandleClickRef = useRef(false);
   const sheetTouchStartYRef = useRef(null);
+  const sheetTouchStartScrollTopRef = useRef(0);
   const pendingDetailScrollRef = useRef(false);
 
   const isMobileSheet = viewportWidth <= mobileSheetBreakpoint;
@@ -423,7 +424,16 @@ export default function App() {
           ref={sheetContentRef}
           className="sheet-content"
           onWheel={(event) => {
-            if (!isMobileSheet || isMobileSheetExpanded) {
+            if (!isMobileSheet) {
+              return;
+            }
+
+            const sheetElement = sheetContentRef.current;
+            if (isMobileSheetExpanded) {
+              if (sheetElement && sheetElement.scrollTop <= 0 && event.deltaY < -12) {
+                event.preventDefault();
+                collapseMobileSheetToDefault();
+              }
               return;
             }
 
@@ -431,14 +441,15 @@ export default function App() {
             expandMobileSheet();
           }}
           onTouchStart={(event) => {
-            if (!isMobileSheet || isMobileSheetExpanded) {
+            if (!isMobileSheet) {
               return;
             }
 
+            sheetTouchStartScrollTopRef.current = sheetContentRef.current?.scrollTop ?? 0;
             sheetTouchStartYRef.current = event.touches[0]?.clientY ?? null;
           }}
           onTouchMove={(event) => {
-            if (!isMobileSheet || isMobileSheetExpanded) {
+            if (!isMobileSheet) {
               return;
             }
 
@@ -452,12 +463,27 @@ export default function App() {
               return;
             }
 
+            if (isMobileSheetExpanded) {
+              const sheetElement = sheetContentRef.current;
+              const isPullingDown = currentY > startY;
+              const startedAtTop = sheetTouchStartScrollTopRef.current <= 0;
+              const isStillAtTop = (sheetElement?.scrollTop ?? 0) <= 0;
+
+              if (isPullingDown && startedAtTop && isStillAtTop && currentY - startY > 18) {
+                event.preventDefault();
+                sheetTouchStartYRef.current = null;
+                collapseMobileSheetToDefault();
+              }
+              return;
+            }
+
             event.preventDefault();
             sheetTouchStartYRef.current = null;
             expandMobileSheet();
           }}
           onTouchEnd={() => {
             sheetTouchStartYRef.current = null;
+            sheetTouchStartScrollTopRef.current = 0;
           }}
         >
           <div className="section-block">
