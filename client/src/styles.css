@@ -86,11 +86,13 @@ textarea {
 
 .control-sheet {
   left: 16px;
-  right: 16px;
-  bottom: 16px;
-  border-radius: 28px;
-  padding: 12px 12px 16px;
+  top: 16px;
+  bottom: 0;
+  width: min(390px, calc(100vw - 32px));
+  border-radius: 32px 32px 0 0;
+  padding: 14px 14px 16px;
   box-shadow: 0 24px 56px rgba(0, 0, 0, 0.46);
+  overflow: hidden;
 }
 
 .control-sheet.is-mobile-sheet {
@@ -121,9 +123,18 @@ textarea {
 
 .sheet-content {
   display: grid;
-  grid-template-columns: 240px minmax(260px, 420px) minmax(260px, 420px);
+  grid-template-columns: 1fr;
   align-content: start;
   gap: 18px;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.sheet-content::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 .section-block {
@@ -156,8 +167,8 @@ textarea {
 .vehicle-chip-list {
   display: grid;
   gap: 10px;
-  max-height: 210px;
-  overflow: auto;
+  max-height: none;
+  overflow: visible;
 }
 
 .vehicle-chip {
@@ -280,13 +291,16 @@ textarea {
 }
 
 .detail-empty {
-  display: block;
-  width: 100%;
-  min-width: 0;
-  font-size: clamp(0.58rem, 2.25vw, 0.9rem);
-  line-height: 1.35;
+  display: inline-block;
+  width: fit-content;
+  max-width: calc(100% - 16px);
+  font-size: clamp(0.62rem, 0.95vw, 0.74rem);
+  line-height: 1.22;
   white-space: nowrap;
   text-align: center;
+  margin-inline: auto;
+  justify-self: center;
+  align-self: center;
 }
 
 .detail-subtitle {
@@ -631,8 +645,10 @@ textarea {
 
   .control-sheet {
     left: 0;
+    top: auto;
     right: 0;
     bottom: 0;
+    width: auto;
     padding: 10px 12px env(safe-area-inset-bottom);
     border-radius: 28px 28px 0 0;
     border-bottom: 0;
@@ -743,11 +759,10 @@ textarea {
 
 @media (max-width: 420px) {
   .detail-empty {
-    white-space: normal;
-  }
-
-  .detail-empty {
     font-size: clamp(0.56rem, 2.5vw, 0.72rem);
     line-height: 1.22;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
   }
 }
