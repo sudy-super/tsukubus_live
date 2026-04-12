@@ -143,13 +143,13 @@ function buildStaticData({ stopsRaw, stationOrdersRaw, geoJsonRaw, northShuttleR
 function buildNorthShuttleRoutes(northShuttleRaw) {
   const routeMetaById = {
     north_shuttle_outbound: {
-      label: "筑波山口方面",
+      label: "筑波山口行",
       badge: "山",
       color: "#67a9ff",
       lineColor: "#67a9ff",
     },
     north_shuttle_inbound: {
-      label: "つくばセンター方面",
+      label: "つくばセンター行",
       badge: "セ",
       color: "#57c79b",
       lineColor: "#57c79b",
