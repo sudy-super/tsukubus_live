@@ -172,7 +172,7 @@ textarea {
 }
 
 .vehicle-chip {
-  --vehicle-accent: #cb6a53;
+  --vehicle-accent: #d85e4a;
   position: relative;
   min-width: 0;
   padding: 14px 16px;
@@ -196,11 +196,11 @@ textarea {
 }
 
 .vehicle-chip.clockwise {
-  --vehicle-accent: #cb6a53;
+  --vehicle-accent: #d85e4a;
 }
 
 .vehicle-chip.counterclockwise {
-  --vehicle-accent: #ca6886;
+  --vehicle-accent: #ca5476;
 }
 
 .vehicle-chip-direction {
@@ -510,7 +510,7 @@ textarea {
 }
 
 .vehicle-marker {
-  --vehicle-accent: #cb6a53;
+  --vehicle-accent: linear-gradient(180deg, #f07d66 0%, #d55340 100%);
   position: relative;
   width: 34px;
   height: 34px;
@@ -529,11 +529,11 @@ textarea {
 }
 
 .vehicle-marker.clockwise {
-  --vehicle-accent: #cb6a53;
+  --vehicle-accent: linear-gradient(180deg, #f07d66 0%, #d55340 100%);
 }
 
 .vehicle-marker.counterclockwise {
-  --vehicle-accent: #ca6886;
+  --vehicle-accent: linear-gradient(180deg, #ef7f9b 0%, #c5476a 100%);
 }
 
 .vehicle-marker::before {
