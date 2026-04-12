@@ -2,14 +2,39 @@ const targetRoutes = {
   "筑波大学循環(右回り)": {
     id: "clockwise",
     label: "右回り",
+    tableLabel: "右回り",
+    badge: "右",
     accent: "#ff5f8f",
   },
   "筑波大学循環(左回り)": {
     id: "counterclockwise",
     label: "左回り",
+    tableLabel: "左回り",
+    badge: "左",
     accent: "#4dc4d8",
   },
 };
+
+const northShuttleVehicleRoutes = [
+  {
+    routeCode: "000001",
+    id: "north_shuttle_outbound",
+    routeName: "北部シャトル",
+    directionLabel: "筑波山口方面",
+    directionTableLabel: "山口方面",
+    directionBadge: "山",
+    accent: "#57c79b",
+  },
+  {
+    routeCode: "000002",
+    id: "north_shuttle_inbound",
+    routeName: "北部シャトル",
+    directionLabel: "つくばセンター方面",
+    directionTableLabel: "センター方面",
+    directionBadge: "セ",
+    accent: "#67a9ff",
+  },
+];
 
 const stopNameAliases = new Map([
   ["つくばセンター(TXつくば駅)", "つくばセンター"],
@@ -172,7 +197,10 @@ export function createLiveMapService({
   async function refreshVehicles(now) {
     const routeCandidateState = await fetchRouteCandidates(now);
     const activeCandidates = routeCandidateState.candidates.filter((candidate) => isActiveCandidate(candidate, now));
-    const hydrateResults = await Promise.allSettled(activeCandidates.map((candidate) => hydrateVehicle(candidate, now)));
+    const [hydrateResults, northShuttleState] = await Promise.all([
+      Promise.allSettled(activeCandidates.map((candidate) => hydrateVehicle(candidate, now))),
+      fetchNorthShuttleVehicles(now),
+    ]);
     const vehicles = [];
     let hydrateRejectedCount = 0;
     let hydrateMissingPositionCount = 0;
@@ -191,6 +219,8 @@ export function createLiveMapService({
       vehicles.push(result.value);
     }
 
+    vehicles.push(...northShuttleState.vehicles);
+
     const generatedAt = new Date().toISOString();
     const degradationReasons = [];
     if (routeCandidateState.degradedCount > 0) {
@@ -201,6 +231,9 @@ export function createLiveMapService({
     }
     if (hydrateMissingPositionCount > 0) {
       degradationReasons.push(`position_missing:${hydrateMissingPositionCount}`);
+    }
+    if (northShuttleState.degradedCount > 0) {
+      degradationReasons.push(`north_shuttle:${northShuttleState.degradedCount}`);
     }
 
     return {
@@ -214,6 +247,60 @@ export function createLiveMapService({
         clockwiseCount: vehicles.filter((vehicle) => vehicle.direction === "clockwise").length,
         counterclockwiseCount: vehicles.filter((vehicle) => vehicle.direction === "counterclockwise").length,
       },
+    };
+  }
+
+  async function fetchNorthShuttleVehicles(now) {
+    const routeLookup = indexedStaticData.routeLookup;
+    const responses = await Promise.allSettled(
+      northShuttleVehicleRoutes.map((route) => queryNorthShuttlePositions(route.routeCode)),
+    );
+    const vehicles = [];
+    let degradedCount = 0;
+
+    for (let index = 0; index < responses.length; index += 1) {
+      const routeConfig = northShuttleVehicleRoutes[index];
+      const result = responses[index];
+      if (result.status !== "fulfilled") {
+        degradedCount += 1;
+        continue;
+      }
+
+      const route = routeLookup.get(routeConfig.id);
+      if (!route || !Array.isArray(route.stops) || route.stops.length === 0) {
+        degradedCount += 1;
+        continue;
+      }
+
+      const stopOrder = route.stops.map((stop) => stop.name);
+      const hydratedVehicles = await Promise.allSettled(
+        result.value.map((vehiclePosition) =>
+          hydrateNorthShuttleVehicle({
+            now,
+            route,
+            routeConfig,
+            stopOrder,
+            vehiclePosition,
+            indexedStaticData,
+          }),
+        ),
+      );
+
+      for (const hydratedVehicle of hydratedVehicles) {
+        if (hydratedVehicle.status !== "fulfilled") {
+          degradedCount += 1;
+          continue;
+        }
+
+        if (hydratedVehicle.value) {
+          vehicles.push(hydratedVehicle.value);
+        }
+      }
+    }
+
+    return {
+      vehicles,
+      degradedCount,
     };
   }
 
@@ -315,6 +402,8 @@ export function createLiveMapService({
       routeName: candidate.routeName,
       direction: candidate.direction,
       directionLabel: candidate.directionLabel,
+      directionTableLabel: candidate.directionTableLabel,
+      directionBadge: candidate.directionBadge,
       accent: candidate.accent,
       lat,
       lon,
@@ -334,6 +423,77 @@ export function createLiveMapService({
       watchedSegmentStartStop: candidate.deptStopName,
       watchedSegmentEndStop: candidate.destStopName,
       lastUpdatedAt: now.toISOString(),
+      pathPredictions,
+    };
+  }
+
+  async function hydrateNorthShuttleVehicle({
+    now,
+    route,
+    routeConfig,
+    stopOrder,
+    vehiclePosition,
+    indexedStaticData,
+  }) {
+    const lat = northShuttleCoordinateToDegrees(vehiclePosition.latitude);
+    const lon = northShuttleCoordinateToDegrees(vehiclePosition.longitude);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+      return null;
+    }
+
+    const currentSeq = clampSequence(numberOrNull(vehiclePosition.stopCode), route.stops.length);
+    const currentStopName = stopNameForSeq(stopOrder, currentSeq);
+    const nextSeq = currentSeq && currentSeq < route.stops.length ? currentSeq + 1 : null;
+    const nextStopName = stopNameForSeq(stopOrder, nextSeq);
+    const updateAt = parseApiDateTime(vehiclePosition.updatedAt) ?? now;
+    const delaySeconds = numberOrNull(vehiclePosition.timeLagSeconds) ?? 0;
+    const delayMinutes = Math.max(0, Math.round(delaySeconds / 60));
+    const delayLabel = delayMinutes > 0 ? `遅延${delayMinutes}分` : "定刻";
+    const headingDeg = computeVehicleHeading({
+      lat,
+      lon,
+      direction: routeConfig.id,
+      stopOrder,
+      currentSeq,
+      currentStopName,
+      nextStopName,
+      indexedStaticData,
+    });
+    const pathPredictions = await buildNorthShuttleGuidePredictions({
+      now,
+      routeCode: routeConfig.routeCode,
+      routeStops: route.stops,
+      currentSeq,
+      currentStopName,
+      queryGuideMessage: queryNorthShuttleGuideMessage,
+    });
+
+    return {
+      tripId: `${routeConfig.id}:${vehiclePosition.tvCode ?? `${lat},${lon}`}`,
+      routeName: routeConfig.routeName,
+      direction: routeConfig.id,
+      directionLabel: routeConfig.directionLabel,
+      directionTableLabel: routeConfig.directionTableLabel,
+      directionBadge: routeConfig.directionBadge,
+      accent: routeConfig.accent,
+      lat,
+      lon,
+      currentSeq,
+      currentStopName,
+      nextSeq,
+      nextStopName,
+      headingDeg,
+      delayMinutes,
+      delayLabel,
+      arrivalLabelAtSegmentStart: null,
+      arrivalLabelAtSegmentEnd: null,
+      scheduledSegmentStartAt: null,
+      scheduledSegmentEndAt: null,
+      scheduledSegmentStartLabel: null,
+      scheduledSegmentEndLabel: null,
+      watchedSegmentStartStop: route.stops[0]?.name ?? null,
+      watchedSegmentEndStop: route.stops.at(-1)?.name ?? null,
+      lastUpdatedAt: updateAt.toISOString(),
       pathPredictions,
     };
   }
@@ -387,6 +547,80 @@ export function createLiveMapService({
       get_off_time: "",
       date_time: formatApiDateTime(now),
     });
+  }
+
+  async function queryNorthShuttlePositions(routeCode) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      controller.abort(new Error(`north_shuttle ${routeCode} timed out after ${upstreamRequestTimeoutMs}ms`));
+    }, upstreamRequestTimeoutMs);
+
+    let response;
+    try {
+      response = await fetchImpl(
+        `http://tsukuba.city.bus-go.com/get_bus_position_v2.php?bccd=03080008&rtcd=${routeCode}&_=${Date.now()}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/xml, text/xml;q=0.9, */*;q=0.8",
+            Referer: "http://tsukuba.city.bus-go.com/",
+          },
+          signal: controller.signal,
+        },
+      );
+    } catch (error) {
+      const reason = controller.signal.aborted ? controller.signal.reason : null;
+      if (reason instanceof Error) {
+        throw reason;
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+
+    if (!response.ok) {
+      throw new Error(`north_shuttle ${routeCode} failed with ${response.status}`);
+    }
+
+    return parseNorthShuttlePositionsXml(await response.text());
+  }
+
+  async function queryNorthShuttleGuideMessage(routeCode, stopCode) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      controller.abort(
+        new Error(`north_shuttle guide ${routeCode}/${stopCode} timed out after ${upstreamRequestTimeoutMs}ms`),
+      );
+    }, upstreamRequestTimeoutMs);
+
+    let response;
+    try {
+      response = await fetchImpl(
+        `http://tsukuba.city.bus-go.com/get_guide_message.php?bccd=03080008&rtcd=${routeCode}&bscd=${stopCode}&_=${Date.now()}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/xml, text/xml;q=0.9, */*;q=0.8",
+            Referer: "http://tsukuba.city.bus-go.com/",
+          },
+          signal: controller.signal,
+        },
+      );
+    } catch (error) {
+      const reason = controller.signal.aborted ? controller.signal.reason : null;
+      if (reason instanceof Error) {
+        throw reason;
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+
+    if (!response.ok) {
+      throw new Error(`north_shuttle guide ${routeCode}/${stopCode} failed with ${response.status}`);
+    }
+
+    return response.text();
   }
 
   async function postJson(pathname, form) {
@@ -494,7 +728,11 @@ function createIndexedStaticData(staticData) {
   return {
     ...staticData,
     stopLookup: new Map((staticData.stops ?? []).map((stop) => [stop.name, stop])),
+    routeLookup: new Map((staticData.routes ?? []).map((route) => [route.id, route])),
     routePathLookup: new Map(Object.entries(staticData.routePathLookup ?? {})),
+    routeStopLookup: new Map(
+      Object.entries(staticData.routeStopLookup ?? {}).map(([routeId, stops]) => [routeId, new Map(Object.entries(stops))]),
+    ),
   };
 }
 
@@ -545,6 +783,8 @@ function normalizeCandidate(candidate, responseDateTime, routeName, now) {
     routeName,
     direction: direction.id,
     directionLabel: direction.label,
+    directionTableLabel: direction.tableLabel ?? direction.label,
+    directionBadge: direction.badge,
     accent: direction.accent,
     sSeq: numberOrNull(candidate.sSeq),
     eSeq: numberOrNull(candidate.eSeq),
@@ -812,9 +1052,9 @@ function computeVehicleHeading({
   direction,
   stopOrder,
   currentSeq,
-  currentStopName,
-  nextStopName,
-  indexedStaticData,
+    currentStopName,
+    nextStopName,
+    indexedStaticData,
 }) {
   const routeHeading = headingForNearestRouteSegment({
     lat,
@@ -826,16 +1066,17 @@ function computeVehicleHeading({
   }
 
   const vehiclePoint = { lat, lon };
-  const nextStopPoint = coordinatesForStop(indexedStaticData, nextStopName);
+  const nextStopPoint = coordinatesForStop(indexedStaticData, nextStopName, direction);
   const directHeading = bearingBetweenPoints(vehiclePoint, nextStopPoint);
   if (directHeading !== null) {
     return directHeading;
   }
 
-  const currentStopPoint = coordinatesForStop(indexedStaticData, currentStopName);
+  const currentStopPoint = coordinatesForStop(indexedStaticData, currentStopName, direction);
   const followingStopPoint = coordinatesForStop(
     indexedStaticData,
     nextStopName ?? stopNameForSeq(stopOrder, currentSeq ? currentSeq + 1 : null),
+    direction,
   );
   const forwardHeading = bearingBetweenPoints(currentStopPoint, followingStopPoint);
   if (forwardHeading !== null) {
@@ -845,6 +1086,7 @@ function computeVehicleHeading({
   const previousStopPoint = coordinatesForStop(
     indexedStaticData,
     stopNameForSeq(stopOrder, currentSeq ? currentSeq - 1 : null),
+    direction,
   );
   return bearingBetweenPoints(previousStopPoint, currentStopPoint);
 }
@@ -880,9 +1122,17 @@ function headingForNearestRouteSegment({ lat, lon, path }) {
   return nearestHeading;
 }
 
-function coordinatesForStop(indexedStaticData, stopName) {
+function coordinatesForStop(indexedStaticData, stopName, routeId = null) {
   if (!stopName) {
     return null;
+  }
+
+  const routeStop = routeId ? indexedStaticData.routeStopLookup.get(routeId)?.get(stopName) : null;
+  if (routeStop && Number.isFinite(routeStop.lat) && Number.isFinite(routeStop.lon)) {
+    return {
+      lat: routeStop.lat,
+      lon: routeStop.lon,
+    };
   }
 
   const stop = indexedStaticData.stopLookup.get(stopName);
@@ -981,6 +1231,136 @@ function clampSequence(seq, maxSeq) {
   return Math.min(Math.max(Math.trunc(seq), 1), maxSeq);
 }
 
+async function buildNorthShuttleGuidePredictions({
+  now,
+  routeCode,
+  routeStops,
+  currentSeq,
+  currentStopName,
+  queryGuideMessage,
+}) {
+  if (!Array.isArray(routeStops) || routeStops.length === 0 || !currentSeq || !routeCode) {
+    return [];
+  }
+
+  if (typeof queryGuideMessage !== "function") {
+    return [];
+  }
+
+  const downstreamStops = routeStops.filter(
+    (stop) => (stop.sequence ?? 0) >= currentSeq && stop.code,
+  );
+  const guideResults = await Promise.allSettled(
+    downstreamStops.map((stop) => queryGuideMessage(routeCode, stop.code)),
+  );
+  const predictions = [];
+
+  for (let index = 0; index < downstreamStops.length; index += 1) {
+    const stop = downstreamStops[index];
+    const guideResult = guideResults[index];
+    if (guideResult.status !== "fulfilled") {
+      continue;
+    }
+
+    const guide = parseNorthShuttleGuideMessage(guideResult.value, now);
+    if (!guide || !guide.estimatedAt || !guide.currentStopName) {
+      continue;
+    }
+
+    if (normalizeStopName(guide.currentStopName) !== normalizeStopName(currentStopName)) {
+      continue;
+    }
+
+    predictions.push({
+      seq: stop.sequence ?? currentSeq + index,
+      stopName: stop.name,
+      scheduledAt: null,
+      estimatedAt: guide.estimatedAt.toISOString(),
+      scheduledLabel: null,
+      estimatedLabel: formatShortTime(guide.estimatedAt),
+      guideMessage: guide.message,
+    });
+  }
+
+  return predictions;
+}
+
+function parseNorthShuttlePositionsXml(xmlText) {
+  if (!xmlText) {
+    return [];
+  }
+
+  return [...xmlText.matchAll(/<get_bus_position>([\s\S]*?)<\/get_bus_position>/g)]
+    .map((match) => {
+      const block = match[1];
+      return {
+        tvCode: xmlTagValue(block, "tv_code"),
+        stopCode: xmlTagValue(block, "bs_code"),
+        latitude: xmlTagValue(block, "latitude"),
+        longitude: xmlTagValue(block, "longitude"),
+        timeLagSeconds: xmlTagValue(block, "time_lag"),
+        lastRoundFlag: xmlTagValue(block, "last_round_flg"),
+        updatedAt: xmlTagValue(block, "update"),
+        result: xmlTagValue(block, "result"),
+      };
+    })
+    .filter((entry) => (entry.result ?? "OK") === "OK");
+}
+
+function parseNorthShuttleGuideMessage(xmlText, now) {
+  const message = xmlTagValue(xmlText, "msg");
+  if (!message) {
+    return null;
+  }
+
+  const arrivalMatch = message.match(/現在、バスは「\s*\d+\s*[　 ](.+?)」付近です。あと約(\d+)分で到着します。?/);
+  if (arrivalMatch) {
+    const currentStopName = normalizeStopName(arrivalMatch[1]);
+    const etaMinutes = Number(arrivalMatch[2]);
+    const estimatedAt = addMinutes(now, etaMinutes);
+    return {
+      message,
+      currentStopName,
+      etaMinutes,
+      estimatedAt,
+    };
+  }
+
+  const arrivingMatch = message.match(/現在、バスは「\s*\d+\s*[　 ](.+?)」付近です。まもなく到着します。?/);
+  if (arrivingMatch) {
+    return {
+      message,
+      currentStopName: normalizeStopName(arrivingMatch[1]),
+      etaMinutes: 0,
+      estimatedAt: now,
+    };
+  }
+
+  return {
+    message,
+    currentStopName: null,
+    etaMinutes: null,
+    estimatedAt: null,
+  };
+}
+
+function xmlTagValue(xmlText, tagName) {
+  if (!xmlText || !tagName) {
+    return null;
+  }
+
+  const match = xmlText.match(new RegExp(`<${tagName}>([\\s\\S]*?)<\\/${tagName}>`));
+  return match ? match[1].trim() : null;
+}
+
+function northShuttleCoordinateToDegrees(value) {
+  const coordinate = numberOrNull(value);
+  if (!Number.isFinite(coordinate)) {
+    return null;
+  }
+  return coordinate / 1_000_000;
+}
+
 function normalizeStopName(name) {
   if (!name) {
     return null;
@@ -1037,8 +1417,12 @@ function parseApiDateTime(text) {
   if (!text) {
     return null;
   }
-  const normalized = text.replace(" ", "T") + ":00+09:00";
-  const date = new Date(normalized);
+  const normalized = text.includes("T") ? text : text.replace(" ", "T");
+  const withSeconds = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(normalized)
+    ? `${normalized}:00`
+    : normalized;
+  const withTimezone = /(?:Z|[+-]\d{2}:\d{2})$/.test(withSeconds) ? withSeconds : `${withSeconds}+09:00`;
+  const date = new Date(withTimezone);
   return Number.isNaN(date.getTime()) ? null : date;
 }
 

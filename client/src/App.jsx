@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const googleMapsApiKey = import.meta.env.GOOGLE_MAPS_API_KEY;
 const stopIconUrl = "/bus_icon.png";
+const northShuttleStopIconUrl = "/bus_icon_north_shuttle.png";
 const campusOverlayMaxZoom = 17;
 const mobileSheetBreakpoint = 980;
 const mobileSheetCollapsedHeight = 68;
@@ -679,6 +680,7 @@ function VehicleChip({ vehicle, isActive, onClick }) {
   const routeMeasureRef = useRef(null);
   const [routeFontPx, setRouteFontPx] = useState(null);
   const routeLabel = `${displayStopName(vehicle.currentStopName) || "走行中"} → ${displayStopName(vehicle.nextStopName) || "終点"}`;
+  const isNorthShuttle = vehicle.direction?.startsWith("north_shuttle");
 
   useEffect(() => {
     const labelElement = routeLabelRef.current;
@@ -720,6 +722,7 @@ function VehicleChip({ vehicle, isActive, onClick }) {
     <button
       type="button"
       className={`vehicle-chip ${vehicle.direction} ${isActive ? "is-active" : ""}`}
+      style={isNorthShuttle ? { "--vehicle-accent": "#8ac65b" } : undefined}
       onClick={onClick}
     >
       <span className="vehicle-chip-direction">{vehicle.directionLabel}</span>
@@ -937,8 +940,10 @@ function MapCanvas({
     );
 
     if (stops.length && !hasFittedRef.current) {
+      const initialViewStops = stops.filter(isCampusLoopStop);
+      const fittedStops = initialViewStops.length > 0 ? initialViewStops : stops;
       const bounds = new googleMaps.LatLngBounds();
-      for (const stop of stops) {
+      for (const stop of fittedStops) {
         bounds.extend({ lat: stop.lat, lng: stop.lon });
       }
       map.fitBounds(bounds, 64);
@@ -1003,6 +1008,7 @@ function StopArrivalRow({ vehicle, prediction }) {
   const currentStopMeasureRef = useRef(null);
   const [currentStopFontPx, setCurrentStopFontPx] = useState(null);
   const currentStopLabel = displayStopName(vehicle.currentStopName) || "走行中";
+  const directionTableLabel = vehicle.directionTableLabel || vehicle.directionLabel;
 
   useEffect(() => {
     const currentStopElement = currentStopRef.current;
@@ -1041,7 +1047,7 @@ function StopArrivalRow({ vehicle, prediction }) {
 
   return (
     <div className="stop-arrival-table__row">
-      <strong>{vehicle.directionLabel}</strong>
+      <strong>{directionTableLabel}</strong>
       <strong
         ref={currentStopRef}
         className="stop-arrival-table__current-stop"
@@ -1090,25 +1096,37 @@ function StopDetail({ stop, arrivals }) {
 }
 
 function createStopMarkerHtml(stop, selected) {
+  const isNorthShuttleStop = isNorthShuttleOnlyStop(stop);
+  const stopThemeClass = isNorthShuttleStop ? "stop-label--north-shuttle" : "";
+  const iconUrl = isNorthShuttleStop ? northShuttleStopIconUrl : stopIconUrl;
   return `
-    <div class="stop-label ${selected ? "is-selected" : ""}">
-      <img class="stop-label__icon" src="${stopIconUrl}" alt="" aria-hidden="true" />
+    <div class="stop-label ${stopThemeClass} ${selected ? "is-selected" : ""}">
+      <img class="stop-label__icon" src="${iconUrl}" alt="" aria-hidden="true" />
       <span class="stop-label__text">${escapeHtml(displayStopName(stop.name))}</span>
     </div>
   `;
 }
 
 function createVehicleMarkerHtml(vehicle, selected) {
-  const directionLabel = vehicle.direction === "clockwise" ? "右" : "左";
+  const isNorthShuttle = vehicle.direction?.startsWith("north_shuttle");
+  const directionLabel = isNorthShuttle
+    ? "北"
+    : vehicle.directionBadge
+      || (vehicle.direction === "clockwise"
+        ? "右"
+        : vehicle.direction === "counterclockwise"
+          ? "左"
+          : vehicle.directionLabel?.slice(0, 1) || "?");
   const delayMinutes = Number.isFinite(vehicle.delayMinutes) ? vehicle.delayMinutes : 0;
   const delayClassName = delayMinutes === 0 ? "vehicle-marker__delay is-on-time" : "vehicle-marker__delay";
   const delay = `<span class="${delayClassName}">${delayMinutes}</span>`;
   const headingDeg = Number.isFinite(vehicle.headingDeg) ? vehicle.headingDeg : 0;
+  const accentStyle = isNorthShuttle ? `; --vehicle-accent: #8ac65b` : "";
 
   return `
-    <div class="vehicle-marker ${vehicle.direction} ${selected ? "is-selected" : ""}" style="--heading-deg: ${headingDeg}deg">
+    <div class="vehicle-marker ${vehicle.direction} ${selected ? "is-selected" : ""}" style="--heading-deg: ${headingDeg}deg${accentStyle}">
       <span class="vehicle-marker__pointer" aria-hidden="true"></span>
-      <span class="vehicle-marker__badge">${directionLabel}</span>
+      <span class="vehicle-marker__badge">${escapeHtml(directionLabel)}</span>
       ${delay}
     </div>
   `;
@@ -1362,4 +1380,16 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
+}
+
+function isNorthShuttleOnlyStop(stop) {
+  const routeIds = stop?.routes?.map((route) => route.id) ?? [];
+  const hasNorthShuttle = routeIds.some((routeId) => routeId.startsWith("north_shuttle"));
+  const hasCampusLoop = routeIds.includes("clockwise") || routeIds.includes("counterclockwise");
+  return hasNorthShuttle && !hasCampusLoop;
+}
+
+function isCampusLoopStop(stop) {
+  const routeIds = stop?.routes?.map((route) => route.id) ?? [];
+  return routeIds.includes("clockwise") || routeIds.includes("counterclockwise");
 }

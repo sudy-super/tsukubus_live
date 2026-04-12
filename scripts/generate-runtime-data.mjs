@@ -17,17 +17,19 @@ const stopNameAliases = new Map([
   ["ＴＡＲＡセンター前", "TARAセンター前"],
   ["TARAセンター前", "TARAセンター前"],
 ]);
+const splitStopNamesByGroup = new Set(["つくばセンター"]);
 
 await mkdir(generatedDir, { recursive: true });
 
-const [stopsRaw, stationOrdersRaw, geoJsonRaw, campusMapData] = await Promise.all([
+const [stopsRaw, stationOrdersRaw, geoJsonRaw, campusMapData, northShuttleRaw] = await Promise.all([
   readJson(path.join(buildDataDir, "eritanbot_bus_stops.json")),
   readJson(path.join(buildDataDir, "eritanbot_station_orders.json")),
   readJson(path.join(buildDataDir, "eritanbot_bus_map.geojson")),
   buildCampusMapData(),
+  readJson(path.join(buildDataDir, "busgo_north_shuttle.json")),
 ]);
 
-const staticData = buildStaticData({ stopsRaw, stationOrdersRaw, geoJsonRaw });
+const staticData = buildStaticData({ stopsRaw, stationOrdersRaw, geoJsonRaw, northShuttleRaw });
 
 await Promise.all([
   writeGeneratedModule(path.join(generatedDir, "static-data.js"), "staticData", staticData),
@@ -39,10 +41,16 @@ async function writeGeneratedModule(filePath, exportName, payload) {
   await writeFile(filePath, source, "utf8");
 }
 
-function buildStaticData({ stopsRaw, stationOrdersRaw, geoJsonRaw }) {
-  const stops = dedupeStops(stopsRaw.filter((stop) => stop.group === "kantetsu"));
-  const stopLookup = new Map(stops.map((stop) => [stop.name, stop]));
-
+function buildStaticData({ stopsRaw, stationOrdersRaw, geoJsonRaw, northShuttleRaw }) {
+  const rawStopSources = stopsRaw
+    .filter((stop) => stop.group === "kantetsu" || stop.group === "north_shuttle")
+    .map((stop) => ({
+      name: normalizeStopName(stop.name),
+      lat: stop.lat,
+      lon: stop.lng,
+      group: stop.group,
+      stationKey: stop.stationKey ?? null,
+    }));
   const clockwiseOrderBase = stationOrdersRaw.kantetsu_order_Re
     .map(normalizeStopName)
     .filter((name) => name && name !== "東京駅八重洲南口");
@@ -57,54 +65,124 @@ function buildStaticData({ stopsRaw, stationOrdersRaw, geoJsonRaw }) {
 
   const clockwiseShape = buildClockwiseShape(geoJsonRaw);
   const counterclockwiseShape = [...clockwiseShape].reverse();
+  const northShuttleRoutes = buildNorthShuttleRoutes(northShuttleRaw);
+  const routes = [
+    {
+      id: "clockwise",
+      name: "筑波大学循環",
+      label: "右回り",
+      badge: "右",
+      color: "#ff5f8f",
+      lineColor: "#ff5f8f",
+      stops: clockwiseOrder.map((name, index) => ({
+        name,
+        sequence: index + 1,
+      })),
+      path: clockwiseShape,
+    },
+    {
+      id: "counterclockwise",
+      name: "筑波大学循環",
+      label: "左回り",
+      badge: "左",
+      color: "#4dc4d8",
+      lineColor: "#4dc4d8",
+      stops: counterclockwiseOrder.map((name, index) => ({
+        name,
+        sequence: index + 1,
+      })),
+      path: counterclockwiseShape,
+    },
+    ...northShuttleRoutes,
+  ];
+  const routeStopSources = routes.flatMap((route) =>
+    route.stops.map((stop) => ({
+      name: stop.name,
+      lat: stop.lat ?? null,
+      lon: stop.lon ?? null,
+      group: routeGroupForRouteId(route.id),
+      stationKey: stop.rawName ?? `${route.id}:${stop.code ?? stop.name}`,
+    })),
+  );
+  const stops = dedupeStops([...rawStopSources, ...routeStopSources]);
+  const stopLookupByGroup = createStopLookupByGroup(stops);
 
   const stopsWithRoutes = stops.map((stop) => ({
     ...stop,
-    routes: [
-      {
-        id: "clockwise",
-        label: "右回り",
-        sequence: sequenceForStop(clockwiseOrder, stop.name),
-      },
-      {
-        id: "counterclockwise",
-        label: "左回り",
-        sequence: sequenceForStop(counterclockwiseOrder, stop.name),
-      },
-    ].filter((route) => route.sequence !== null),
+    routes: routes
+      .map((route) => ({
+        id: route.id,
+        label: route.label,
+        sequence: sequenceForStop(
+          route.stops.map((routeStop) => routeStop.name),
+          stop.name,
+        ),
+      }))
+      .filter((route) => route.sequence !== null && stopSupportsRoute(stop, route.id)),
+  }));
+
+  const routesWithResolvedStops = routes.map((route) => ({
+    ...route,
+    stops: route.stops.map((routeStop) => stopToRouteStop(stopLookupByGroup, routeStop, route.id)),
   }));
 
   return {
     stops: stopsWithRoutes,
-    stopOrders: {
-      clockwise: clockwiseOrder,
-      counterclockwise: counterclockwiseOrder,
+    stopOrders: Object.fromEntries(routes.map((route) => [route.id, route.stops.map((stop) => stop.name)])),
+    routes: routesWithResolvedStops,
+    routePathLookup: Object.fromEntries(routes.map((route) => [route.id, route.path])),
+    routeStopLookup: Object.fromEntries(
+      routesWithResolvedStops.map((route) => [
+        route.id,
+        Object.fromEntries(route.stops.map((stop) => [stop.name, { lat: stop.lat, lon: stop.lon }])),
+      ]),
+    ),
+  };
+}
+
+function buildNorthShuttleRoutes(northShuttleRaw) {
+  const routeMetaById = {
+    north_shuttle_outbound: {
+      label: "筑波山口方面",
+      badge: "山",
+      color: "#67a9ff",
+      lineColor: "#67a9ff",
     },
-    routes: [
-      {
-        id: "clockwise",
-        name: "筑波大学循環",
-        label: "右回り",
-        color: "#ff5f8f",
-        lineColor: "#ff5f8f",
-        stops: clockwiseOrder.map((name, index) => stopToRouteStop(stopLookup, name, index + 1)),
-        path: clockwiseShape,
-      },
-      {
-        id: "counterclockwise",
-        name: "筑波大学循環",
-        label: "左回り",
-        color: "#4dc4d8",
-        lineColor: "#4dc4d8",
-        stops: counterclockwiseOrder.map((name, index) => stopToRouteStop(stopLookup, name, index + 1)),
-        path: counterclockwiseShape,
-      },
-    ],
-    routePathLookup: {
-      clockwise: clockwiseShape,
-      counterclockwise: counterclockwiseShape,
+    north_shuttle_inbound: {
+      label: "つくばセンター方面",
+      badge: "セ",
+      color: "#57c79b",
+      lineColor: "#57c79b",
     },
   };
+
+  return (northShuttleRaw.routes ?? [])
+    .map((route) => {
+      const meta = routeMetaById[route.id];
+      if (!meta) {
+        return null;
+      }
+
+      return {
+        id: route.id,
+        name: route.name ?? "北部シャトル",
+        label: meta.label,
+        badge: meta.badge,
+        color: meta.color,
+        lineColor: meta.lineColor,
+        stops: (route.stops ?? []).map((stop, index) => ({
+          code: stop.code ?? String(index + 1).padStart(3, "0"),
+          name: normalizeStopName(stop.name),
+          rawName: stop.rawName ?? stop.name,
+          lat: stop.lat ?? null,
+          lon: stop.lon ?? null,
+          minuteFromOrigin: Number.isFinite(stop.minuteFromOrigin) ? stop.minuteFromOrigin : null,
+          sequence: Number.isFinite(stop.sequence) ? stop.sequence : index + 1,
+        })),
+        path: Array.isArray(route.path) ? route.path : [],
+      };
+    })
+    .filter(Boolean);
 }
 
 async function buildCampusMapData() {
@@ -202,20 +280,31 @@ function dedupeStops(stops) {
 
   for (const stop of stops) {
     const name = normalizeStopName(stop.name);
-    if (!name || seen.has(name)) {
+    const dedupeKey = stopDedupeKey({ ...stop, name });
+    if (!name || seen.has(dedupeKey)) {
       continue;
     }
 
-    seen.add(name);
+    seen.add(dedupeKey);
     normalized.push({
       id: `stop-${normalized.length + 1}`,
       name,
       lat: stop.lat,
-      lon: stop.lng,
+      lon: stop.lon ?? stop.lng ?? null,
+      group: stop.group ?? null,
+      stationKey: stop.stationKey ?? null,
     });
   }
 
   return normalized;
+}
+
+function createStopLookupByGroup(stops) {
+  const lookup = new Map();
+  for (const stop of stops) {
+    lookup.set(`${stop.group ?? "unknown"}:${stop.name}`, stop);
+  }
+  return lookup;
 }
 
 function emptyCampusMapData(reason) {
@@ -319,14 +408,47 @@ function sequenceForStop(stopOrder, stopName) {
   return matches.length ? matches : null;
 }
 
-function stopToRouteStop(stopLookup, stopName, sequence) {
-  const stop = stopLookup.get(stopName);
+function stopToRouteStop(stopLookupByGroup, stopName, routeId) {
+  const routeStop =
+    typeof stopName === "object" && stopName !== null
+      ? stopName
+      : {
+          name: stopName,
+          sequence: null,
+        };
+  const stop = stopLookupByGroup.get(`${routeGroupForRouteId(routeId)}:${routeStop.name}`);
   return {
-    name: stopName,
-    sequence,
-    lat: stop?.lat ?? null,
-    lon: stop?.lon ?? null,
+    name: routeStop.name,
+    sequence: routeStop.sequence,
+    lat: stop?.lat ?? routeStop.lat ?? null,
+    lon: stop?.lon ?? routeStop.lon ?? null,
+    code: routeStop.code ?? null,
+    minuteFromOrigin: routeStop.minuteFromOrigin ?? null,
+    rawName: routeStop.rawName ?? null,
   };
+}
+
+function stopDedupeKey(stop) {
+  const name = normalizeStopName(stop.name);
+  if (!name) {
+    return "";
+  }
+  if (splitStopNamesByGroup.has(name)) {
+    return `${stop.group ?? "unknown"}:${name}`;
+  }
+  return name;
+}
+
+function stopSupportsRoute(stop, routeId) {
+  const routeGroup = routeGroupForRouteId(routeId);
+  if (splitStopNamesByGroup.has(stop.name)) {
+    return stop.group === routeGroup;
+  }
+  return true;
+}
+
+function routeGroupForRouteId(routeId) {
+  return routeId.startsWith("north_shuttle") ? "north_shuttle" : "kantetsu";
 }
 
 function normalizeStopName(name) {
