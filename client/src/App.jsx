@@ -359,7 +359,7 @@ export default function App() {
   }, [isMobileSheetAtDefault]);
 
   const handleSelectVehicle = useCallback((vehicle) => {
-    pendingDetailScrollRef.current = isMobileSheet;
+    pendingDetailScrollRef.current = true;
     setSelectedVehicleId(vehicle.tripId);
     setSelectedStopId(null);
     if (isMobileSheet) {
@@ -368,7 +368,7 @@ export default function App() {
   }, [isMobileSheet]);
 
   const handleSelectStop = useCallback((stop) => {
-    pendingDetailScrollRef.current = isMobileSheet;
+    pendingDetailScrollRef.current = true;
     setSelectedStopId(stop.id);
     setSelectedVehicleId(null);
     if (isMobileSheet) {
@@ -377,7 +377,11 @@ export default function App() {
   }, [isMobileSheet]);
 
   useEffect(() => {
-    if (!isMobileSheet || !isMobileSheetExpanded || !selectedDetailKey || !pendingDetailScrollRef.current) {
+    if (!selectedDetailKey || !pendingDetailScrollRef.current) {
+      return;
+    }
+
+    if (isMobileSheet && !isMobileSheetExpanded) {
       return;
     }
 
@@ -388,12 +392,20 @@ export default function App() {
     }
 
     const timeoutId = window.setTimeout(() => {
+      const targetElement = detailElement.querySelector(".detail-subtitle") ?? detailElement;
+      const sheetRect = sheetElement.getBoundingClientRect();
+      const targetRect = targetElement.getBoundingClientRect();
+      const topInset = isMobileSheet ? 16 : 12;
+      const nextTop = Math.max(
+        0,
+        sheetElement.scrollTop + (targetRect.top - sheetRect.top) - topInset,
+      );
       sheetElement.scrollTo({
-        top: Math.max(0, detailElement.offsetTop - 8),
+        top: nextTop,
         behavior: "smooth",
       });
       pendingDetailScrollRef.current = false;
-    }, 220);
+    }, isMobileSheet ? 220 : 80);
 
     return () => {
       window.clearTimeout(timeoutId);
