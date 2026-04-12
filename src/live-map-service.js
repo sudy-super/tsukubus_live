@@ -21,7 +21,7 @@ const northShuttleVehicleRoutes = [
     id: "north_shuttle_outbound",
     routeName: "北部シャトル",
     directionLabel: "筑波山口行",
-    directionTableLabel: "山口行",
+    directionTableLabel: "筑波山口行",
     directionBadge: "山",
     accent: "#57c79b",
   },
