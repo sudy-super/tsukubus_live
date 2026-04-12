@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 
 import { campusMapData } from "./generated/campus-map-data.js";
 import { staticData } from "./generated/static-data.js";
-import { createLiveMapService } from "./live-map-service.js";
+import { createLiveMapService, serializeVehiclePayloadForClient } from "./live-map-service.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -48,21 +48,29 @@ app.get("/api/vehicles", async (_req, res) => {
       console.error("vehicle refresh failed", error);
     });
     res.json(
-      liveMapService.getCachedVehiclePayload({
-        stale: true,
-        generatedAt: now.toISOString(),
-      }),
+      serializeVehiclePayloadForClient(
+        liveMapService.getCachedVehiclePayload({
+          stale: true,
+          generatedAt: now.toISOString(),
+        }),
+      ),
     );
     return;
   }
 
   try {
-    res.json(await withTimeout(liveMapService.getVehiclePayload(), vehicleRequestTimeoutMs));
+    res.json(
+      serializeVehiclePayloadForClient(
+        await withTimeout(liveMapService.getVehiclePayload(), vehicleRequestTimeoutMs),
+      ),
+    );
   } catch (error) {
-    const cachedPayload = liveMapService.getCachedVehiclePayload({
-      stale: true,
-      generatedAt: new Date().toISOString(),
-    });
+    const cachedPayload = serializeVehiclePayloadForClient(
+      liveMapService.getCachedVehiclePayload({
+        stale: true,
+        generatedAt: new Date().toISOString(),
+      }),
+    );
     if (cachedPayload) {
       res.json(cachedPayload);
       return;
@@ -71,6 +79,12 @@ app.get("/api/vehicles", async (_req, res) => {
     res.status(502).json({
       error: error instanceof Error ? error.message : "unknown_error",
       lastSuccessfulAt: liveMapService.getHealthPayload().lastSuccessfulAt,
+      queryWindowMinutes: null,
+      stats: {
+        activeCount: 0,
+        clockwiseCount: 0,
+        counterclockwiseCount: 0,
+      },
       vehicles: [],
     });
   }

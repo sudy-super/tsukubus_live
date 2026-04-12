@@ -661,6 +661,61 @@ export function createLiveMapService({
   }
 }
 
+export function serializeVehiclePayloadForClient(payload) {
+  if (!payload) {
+    return null;
+  }
+
+  const serialized = {
+    generatedAt: payload.generatedAt,
+    lastSuccessfulAt: payload.lastSuccessfulAt,
+    queryWindowMinutes: payload.queryWindowMinutes,
+    stats: payload.stats,
+    vehicles: (payload.vehicles ?? []).map(serializeVehicleForClient),
+  };
+
+  if (payload.stale) {
+    serialized.stale = true;
+  }
+
+  if (payload.upstreamError) {
+    serialized.upstreamError = payload.upstreamError;
+  }
+
+  if (payload.error) {
+    serialized.error = payload.error;
+  }
+
+  return serialized;
+}
+
+function serializeVehicleForClient(vehicle) {
+  return {
+    tripId: vehicle.tripId,
+    routeName: vehicle.routeName,
+    direction: vehicle.direction,
+    directionLabel: vehicle.directionLabel,
+    directionTableLabel: vehicle.directionTableLabel,
+    directionBadge: vehicle.directionBadge,
+    lat: vehicle.lat,
+    lon: vehicle.lon,
+    currentSeq: vehicle.currentSeq,
+    headingDeg: vehicle.headingDeg,
+    currentStopName: vehicle.currentStopName,
+    nextSeq: vehicle.nextSeq,
+    nextStopName: vehicle.nextStopName,
+    delayMinutes: vehicle.delayMinutes,
+    delayLabel: vehicle.delayLabel,
+    lastUpdatedAt: vehicle.lastUpdatedAt,
+    pathPredictions: (vehicle.pathPredictions ?? []).map((prediction) => ({
+      seq: prediction.seq,
+      stopName: prediction.stopName,
+      estimatedAt: prediction.estimatedAt,
+      estimatedLabel: prediction.estimatedLabel,
+    })),
+  };
+}
+
 function mergeVehiclePayload(previousPayload, refreshState, previousLastSuccessfulAt) {
   if (!previousPayload) {
     return finalizeVehiclePayload({

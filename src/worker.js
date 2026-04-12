@@ -1,6 +1,6 @@
 import { campusMapData } from "./generated/campus-map-data.js";
 import { staticData } from "./generated/static-data.js";
-import { createLiveMapService } from "./live-map-service.js";
+import { createLiveMapService, serializeVehiclePayloadForClient } from "./live-map-service.js";
 
 const liveMapService = createLiveMapService({ staticData, campusMapData });
 const vehicleRequestTimeoutMs = 4_500;
@@ -31,20 +31,28 @@ export default {
       if (liveMapService.hasVehiclePayload() && !liveMapService.isVehiclePayloadFresh(now)) {
         ctx.waitUntil(liveMapService.refreshVehiclePayload(now));
         return json(
-          liveMapService.getCachedVehiclePayload({
-            stale: true,
-            generatedAt: now.toISOString(),
-          }),
+          serializeVehiclePayloadForClient(
+            liveMapService.getCachedVehiclePayload({
+              stale: true,
+              generatedAt: now.toISOString(),
+            }),
+          ),
         );
       }
 
       try {
-        return json(await withTimeout(liveMapService.getVehiclePayload(), vehicleRequestTimeoutMs));
+        return json(
+          serializeVehiclePayloadForClient(
+            await withTimeout(liveMapService.getVehiclePayload(), vehicleRequestTimeoutMs),
+          ),
+        );
       } catch (error) {
-        const cachedPayload = liveMapService.getCachedVehiclePayload({
-          stale: true,
-          generatedAt: new Date().toISOString(),
-        });
+        const cachedPayload = serializeVehiclePayloadForClient(
+          liveMapService.getCachedVehiclePayload({
+            stale: true,
+            generatedAt: new Date().toISOString(),
+          }),
+        );
         if (cachedPayload) {
           return json(cachedPayload);
         }
@@ -53,6 +61,12 @@ export default {
           {
             error: error instanceof Error ? error.message : "unknown_error",
             lastSuccessfulAt: liveMapService.getHealthPayload().lastSuccessfulAt,
+            queryWindowMinutes: null,
+            stats: {
+              activeCount: 0,
+              clockwiseCount: 0,
+              counterclockwiseCount: 0,
+            },
             vehicles: [],
           },
           { status: 502 },
