@@ -204,15 +204,25 @@ export function createLiveMapService({
     const vehicles = [];
     let hydrateRejectedCount = 0;
     let hydrateMissingPositionCount = 0;
+    const retainTripIds = new Set(northShuttleState.retainTripIds ?? []);
+    const retainDirections = new Set(northShuttleState.retainDirections ?? []);
 
-    for (const result of hydrateResults) {
+    for (let index = 0; index < hydrateResults.length; index += 1) {
+      const result = hydrateResults[index];
+      const candidate = activeCandidates[index];
       if (result.status === "rejected") {
         hydrateRejectedCount += 1;
+        if (candidate?.tripId) {
+          retainTripIds.add(candidate.tripId);
+        }
         continue;
       }
 
       if (!result.value) {
         hydrateMissingPositionCount += 1;
+        if (candidate?.tripId) {
+          retainTripIds.add(candidate.tripId);
+        }
         continue;
       }
 
@@ -242,6 +252,8 @@ export function createLiveMapService({
       vehicles: vehicles.sort(compareVehicles),
       isDegraded: degradationReasons.length > 0,
       upstreamError: degradationReasons.length ? degradationReasons.join(", ") : null,
+      retainTripIds: [...retainTripIds],
+      retainDirections: [...retainDirections],
       stats: {
         activeCount: vehicles.length,
         clockwiseCount: vehicles.filter((vehicle) => vehicle.direction === "clockwise").length,
@@ -257,18 +269,22 @@ export function createLiveMapService({
     );
     const vehicles = [];
     let degradedCount = 0;
+    const retainTripIds = new Set();
+    const retainDirections = new Set();
 
     for (let index = 0; index < responses.length; index += 1) {
       const routeConfig = northShuttleVehicleRoutes[index];
       const result = responses[index];
       if (result.status !== "fulfilled") {
         degradedCount += 1;
+        retainDirections.add(routeConfig.id);
         continue;
       }
 
       const route = routeLookup.get(routeConfig.id);
       if (!route || !Array.isArray(route.stops) || route.stops.length === 0) {
         degradedCount += 1;
+        retainDirections.add(routeConfig.id);
         continue;
       }
 
@@ -286,14 +302,26 @@ export function createLiveMapService({
         ),
       );
 
-      for (const hydratedVehicle of hydratedVehicles) {
+      for (let vehicleIndex = 0; vehicleIndex < hydratedVehicles.length; vehicleIndex += 1) {
+        const hydratedVehicle = hydratedVehicles[vehicleIndex];
+        const vehiclePosition = result.value[vehicleIndex];
+        const fallbackTripId = northShuttleTripId(routeConfig, vehiclePosition);
         if (hydratedVehicle.status !== "fulfilled") {
           degradedCount += 1;
+          if (fallbackTripId) {
+            retainTripIds.add(fallbackTripId);
+          }
           continue;
         }
 
         if (hydratedVehicle.value) {
           vehicles.push(hydratedVehicle.value);
+          continue;
+        }
+
+        degradedCount += 1;
+        if (fallbackTripId) {
+          retainTripIds.add(fallbackTripId);
         }
       }
     }
@@ -301,6 +329,8 @@ export function createLiveMapService({
     return {
       vehicles,
       degradedCount,
+      retainTripIds: [...retainTripIds],
+      retainDirections: [...retainDirections],
     };
   }
 
@@ -739,9 +769,18 @@ function mergeVehiclePayload(previousPayload, refreshState, previousLastSuccessf
     });
   }
 
-  const mergedByTrip = new Map(previousPayload.vehicles.map((vehicle) => [vehicle.tripId, vehicle]));
-  for (const vehicle of refreshState.vehicles) {
-    mergedByTrip.set(vehicle.tripId, vehicle);
+  const mergedByTrip = new Map(refreshState.vehicles.map((vehicle) => [vehicle.tripId, vehicle]));
+  const retainTripIds = new Set(refreshState.retainTripIds ?? []);
+  const retainDirections = new Set(refreshState.retainDirections ?? []);
+
+  for (const vehicle of previousPayload.vehicles) {
+    if (mergedByTrip.has(vehicle.tripId)) {
+      continue;
+    }
+
+    if (retainTripIds.has(vehicle.tripId) || retainDirections.has(vehicle.direction)) {
+      mergedByTrip.set(vehicle.tripId, vehicle);
+    }
   }
 
   return finalizeVehiclePayload({
@@ -777,6 +816,13 @@ function finalizeVehiclePayload({ generatedAt, lastSuccessfulAt, queryWindowMinu
   }
 
   return payload;
+}
+
+function northShuttleTripId(routeConfig, vehiclePosition) {
+  if (!routeConfig || !vehiclePosition?.tvCode) {
+    return null;
+  }
+  return `${routeConfig.id}:${vehiclePosition.tvCode}`;
 }
 
 function createIndexedStaticData(staticData) {
