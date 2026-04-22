@@ -59,6 +59,8 @@ const anchorQueries = [
 const queryOffsetsMinutes = [-60, -45, -30, -15, 0, 15, 30];
 const jstOffsetMinutes = 9 * 60;
 const upstreamRequestTimeoutMs = 8_000;
+const upstreamBrowserUserAgent =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36";
 
 export function createLiveMapService({
   staticData,
@@ -543,7 +545,11 @@ export function createLiveMapService({
       return await queryRouteSearch(params);
     } catch (error) {
       const message = error instanceof Error ? error.message : "";
-      if (message === "/route_search failed with 500" || message.includes("timed out") || message === "This operation was aborted") {
+      if (
+        message.startsWith("/route_search failed with 500") ||
+        message.includes("timed out") ||
+        message === "This operation was aborted"
+      ) {
         return {
           datetime: params.dateTime,
           candidate_list: [],
@@ -669,6 +675,7 @@ export function createLiveMapService({
           "X-Requested-With": "XMLHttpRequest",
           Origin: "https://navi.kanto-tetsudo.com",
           Referer: "https://navi.kanto-tetsudo.com/search_dest",
+          "User-Agent": upstreamBrowserUserAgent,
         },
         body,
         signal: controller.signal,
@@ -684,7 +691,10 @@ export function createLiveMapService({
     }
 
     if (!response.ok) {
-      throw new Error(`${pathname} failed with ${response.status}`);
+      const errorBody = await response.text().catch(() => "");
+      const errorSnippet = errorBody.replace(/\s+/g, " ").trim().slice(0, 200);
+      const detail = errorSnippet ? `: ${errorSnippet}` : "";
+      throw new Error(`${pathname} failed with ${response.status}${detail}`);
     }
 
     return response.json();
